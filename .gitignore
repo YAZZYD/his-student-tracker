@@ -5,4 +5,8 @@ out
 .eslintcache
 *.log*
 .env
-/src/generated/prisma
+/prisma/generated
+docker-compose.yaml
+prisma/seeders.ts
+prisma/migrations/*
+!prisma/migrations/seed.ts
