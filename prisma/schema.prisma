@@ -27,7 +27,7 @@ enum Skill_Type {
 
 model Admin {
   id        Int      @id @default(autoincrement())
-  name      String   @unique
+  username      String   @unique
   password  String
   createdAt DateTime @default(now())
 }

@@ -10,3 +10,4 @@ docker-compose.yaml
 prisma/seeders.ts
 prisma/migrations/*
 !prisma/migrations/seed.ts
+makefile
