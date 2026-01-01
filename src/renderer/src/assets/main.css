@@ -2,16 +2,103 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Main Layout */
 .main-layout {
-  @apply h-screen w-screen relative bg-slate-900;
+  @apply h-screen w-screen relative;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.main-layout::before {
+  content: '';
+  position: absolute;
+  inset: 0;
   background-image: url('./his-logo.png');
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 130vh auto;
+  background-size: 120vh auto;
+  opacity: 0.08;
+  filter: grayscale(20%);
 }
 
 .main-layout-overlay {
-  @apply absolute top-0 left-0 h-full w-full flex items-center justify-center;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
+  @apply absolute inset-0 flex flex-col;
+  background: radial-gradient(
+    ellipse at top,
+    rgba(15, 23, 42, 0.7) 0%,
+    rgba(15, 23, 42, 0.85) 100%
+  );
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+/* Scrollbar Styling */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51, 65, 85) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 6px;
+  margin: 4px 0;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgb(51, 65, 85) 0%, rgb(30, 41, 59) 100%);
+  border-radius: 6px;
+  border: 2px solid rgba(15, 23, 42, 0.4);
+  transition: background 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgb(71, 85, 105) 0%, rgb(51, 65, 85) 100%);
+  border-color: rgba(15, 23, 42, 0.6);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:active {
+  background: rgb(100, 116, 139);
+}
+
+/* Scrollbar corner */
+.scrollbar-thin::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Global smooth scrolling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51, 65, 85) transparent;
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgb(59, 130, 246);
+  outline-offset: 2px;
+}
+
+/* Selection styling */
+::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: rgb(226, 232, 240);
+}
+
+/* Smooth transitions for interactive elements */
+button,
+a,
+input,
+select {
+  transition: all 0.15s ease-in-out;
+}
+
+button {
+  margin-top: 1vh;
 }

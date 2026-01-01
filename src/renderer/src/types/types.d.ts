@@ -1,0 +1,1 @@
+/home/ya22y/student-tracker/src/preload/index.d.ts

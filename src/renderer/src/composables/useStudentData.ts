@@ -1,0 +1,128 @@
+import { ref, computed, Ref, ComputedRef } from 'vue'
+import {
+  StudentWithRelations as Student,
+  SkillAvg,
+  SkillRatingWithRelations as SkillRating
+} from '@renderer/types/students'
+
+import { getVertexPosition } from '@renderer/lib/geometry.utils'
+
+export const useStudentData = (): {
+  student: Ref<Student | null>
+  loading: Ref<boolean>
+  error: Ref<string | null>
+  softSkills: ComputedRef<SkillAvg[]>
+  hardSkills: ComputedRef<SkillAvg[]>
+  age: ComputedRef<number>
+  softSkillsAverage: ComputedRef<number>
+  hardSkillsAverage: ComputedRef<number>
+  engagementScore: ComputedRef<number>
+  overallRating: ComputedRef<number>
+  getDataPoints: ComputedRef<{ x: number; y: number }[]>
+  fetchStudent: (code: string) => Promise<void>
+} => {
+  const student = ref<Student | null>(null)
+  const loading = ref(true)
+  const error = ref<string | null>(null)
+
+  const averageSkillScores = computed<SkillAvg[]>(() => {
+    if (!student.value?.ratings.length) return []
+
+    const skillMap = new Map<number, { skill: SkillRating['skill']; scores: number[] }>()
+
+    student.value.ratings.forEach((rating) => {
+      rating.skillRatings.forEach((sr) => {
+        if (!skillMap.has(sr.skill.id)) {
+          skillMap.set(sr.skill.id, { skill: sr.skill, scores: [] })
+        }
+        skillMap.get(sr.skill.id)!.scores.push(sr.score)
+      })
+    })
+
+    return Array.from(skillMap.values()).map(({ skill, scores }) => ({
+      skill,
+      average: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+    }))
+  })
+
+  const softSkills = computed(() => averageSkillScores.value.filter((s) => s.skill.type === 'SOFT'))
+
+  const hardSkills = computed(() => averageSkillScores.value.filter((s) => s.skill.type === 'HARD'))
+
+  const overallRating = computed(() => {
+    if (!averageSkillScores.value.length) return 0
+    return Math.round(
+      averageSkillScores.value.reduce((sum, s) => sum + s.average, 0) /
+        averageSkillScores.value.length
+    )
+  })
+
+  const age = computed(() => {
+    if (!student.value) return 0
+    const birth = new Date(student.value.birth_date)
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const monthDiff = today.getMonth() - birth.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--
+    }
+    return age
+  })
+
+  const softSkillsAverage = computed(() => {
+    if (!softSkills.value.length) return 0
+    return Math.round(
+      softSkills.value.reduce((sum, s) => sum + s.average, 0) / softSkills.value.length
+    )
+  })
+
+  const hardSkillsAverage = computed(() => {
+    if (!hardSkills.value.length) return 0
+    return Math.round(
+      hardSkills.value.reduce((sum, s) => sum + s.average, 0) / hardSkills.value.length
+    )
+  })
+
+  const engagementScore = computed(() => {
+    if (!student.value) return 0
+    const activityCount = student.value.activities.length
+    return Math.min(100, Math.round((activityCount / 10) * 100))
+  })
+  const fetchStudent = async (code: string): Promise<void> => {
+    try {
+      loading.value = true
+      const response = await window.api.showStudent(code)
+
+      if (response.success) {
+        student.value = response.data
+      } else {
+        error.value = response.message
+      }
+    } catch (err) {
+      error.value = 'Failed to load student data'
+      console.error(err)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getDataPoints = computed(() => {
+    const values = [softSkillsAverage.value, hardSkillsAverage.value, engagementScore.value]
+    return values.map((value, i) => getVertexPosition(i, (value / 100) * 35, 0))
+  })
+
+  return {
+    student,
+    loading,
+    error,
+    softSkills,
+    hardSkills,
+    overallRating,
+    age,
+    softSkillsAverage,
+    hardSkillsAverage,
+    engagementScore,
+    getDataPoints,
+    fetchStudent
+  }
+}

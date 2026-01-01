@@ -1,7 +1,6 @@
-
 generator client {
-  provider = "prisma-client"
-  output   = "./generated"
+  provider               = "prisma-client"
+  output                 = "./generated"
   engineType             = "client"
   runtime                = "nodejs"
   moduleFormat           = "esm"
@@ -27,74 +26,73 @@ enum Skill_Type {
 
 model Admin {
   id        Int      @id @default(autoincrement())
-  username      String   @unique
+  username  String   @unique
   password  String
   createdAt DateTime @default(now())
 }
 
 model Grade {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique
-  students      Student[]
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  students Student[]
 }
 
 model Specialty {
-  id              Int      @id @default(autoincrement())
-  name            String   @unique
-  students        Student[]
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  students Student[]
 }
 
-
 model Student {
-  id                  Int              @id @default(autoincrement())
-  code                String           @unique
-  name                String           @unique
-  email               String           @unique
-  birth_date          DateTime
-  birth_place         String
-  enrollment_year     DateTime
-  gradeId             Int
-  specialtyId         Int
-  grade               Grade            @relation(fields: [gradeId], references: [id])
-  specialty           Specialty        @relation(fields: [specialtyId], references: [id])
-  ratings             Rating[]
-  activities          Activity[]
+  id              Int        @id @default(autoincrement())
+  code            String     @unique
+  name            String     @unique
+  email           String     @unique
+  birth_date      DateTime
+  birth_place     String
+  enrollment_year DateTime
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  gradeId         Int
+  specialtyId     Int
+  grade           Grade      @relation(fields: [gradeId], references: [id])
+  specialty       Specialty  @relation(fields: [specialtyId], references: [id])
+  ratings         Rating[]
+  activities      Activity[]
 }
 
 model Activity {
-  id               Int                 @id @default(autoincrement())
-  name             String
-  description      String
-  type             Activity_Type
-  students         Student[]
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  type        Activity_Type
+  students    Student[]
 }
-
-
 
 model Rating {
-  id            Int            @id @default(autoincrement())
-  studentId     Int
-  comments      String?
-  createdAt     DateTime      @default(now())
-  udpatedAt     DateTime      @updatedAt
-  student       Student       @relation(fields: [studentId],references: [id])
+  id           Int           @id @default(autoincrement())
+  studentId    Int
+  comments     String?
+  createdAt    DateTime      @default(now())
+  udpatedAt    DateTime      @updatedAt
+  student      Student       @relation(fields: [studentId], references: [id])
   skillRatings SkillRating[]
 }
+
 model Skill {
-  id               Int                 @id @default(autoincrement())
-  name             String              @unique
-  description      String              @unique
-  type             Skill_Type
-  rating           SkillRating[]
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String        @unique
+  type        Skill_Type
+  rating      SkillRating[]
 }
 
 model SkillRating {
-  ratingId  Int
-  skillId   Int
-  score     Int
-  rating    Rating   @relation(fields: [ratingId], references: [id])
-  skill     Skill    @relation(fields: [skillId], references: [id])
+  ratingId Int
+  skillId  Int
+  score    Int
+  rating   Rating @relation(fields: [ratingId], references: [id])
+  skill    Skill  @relation(fields: [skillId], references: [id])
 
   @@id([ratingId, skillId])
 }
-

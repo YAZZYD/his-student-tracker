@@ -30,3 +30,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+p {
+  font-size: medium;
+}
+
+span {
+  font-size: small;
+}
