@@ -1,8 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import MainLayout from '@renderer/layouts/MainLayout.vue'
 import Login from '@renderer/pages/auth/Login.vue'
-import StudentIndex from '@renderer/pages/students/IndexStudent.vue'
-import ShowStudent from '@renderer/pages/students/ShowStudent.vue'
+import StudentIndex from '@renderer/pages/students/index/IndexStudent.vue'
+import ShowStudent from '@renderer/pages/students/show/ShowStudent.vue'
+import EditStudent from '@renderer/pages/students/edit/EditStudent.vue'
 
 const routes = [
   {
@@ -15,7 +16,8 @@ const routes = [
     component: MainLayout,
     children: [
       { path: 'index', name: 'student-index', component: StudentIndex },
-      { path: 'show/:code', name: 'student-show', component: ShowStudent, props: true }
+      { path: 'show/:code', name: 'student-show', component: ShowStudent, props: true },
+      { path: 'update/:code', name: 'student-edit', component: EditStudent, props: true }
     ]
   }
 ]

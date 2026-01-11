@@ -1,3 +1,4 @@
+import { attachActivitiesReq, updateStudentInfoReq } from '@/schemas/student.schema'
 import { prisma } from '../config/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
 
@@ -39,7 +40,10 @@ export async function indexStudents(page: number = 1): Promise<Response> {
     }
   } catch (err) {
     console.error(err)
-    return { success: false, message: 'Error fetching students' }
+    console.error(err)
+    return err instanceof Error
+      ? { success: false, message: err.message as string }
+      : { success: false, message: 'Unexpected Error' }
   }
 }
 
@@ -75,6 +79,53 @@ export async function showStudent(code: string): Promise<Response> {
     }
   } catch (err) {
     console.error(err)
-    return { success: false, message: 'Error while fetching student' }
+    return err instanceof Error
+      ? { success: false, message: err.message as string }
+      : { success: false, message: 'Unexpected Error' }
+  }
+}
+
+export async function updateStudent(data: updateStudentInfoReq): Promise<Response> {
+  try {
+    await prisma.student.update({
+      where: { code: data.code },
+      data: data
+    })
+    return {
+      success: true,
+      message: 'Student updated Successfully'
+    }
+  } catch (err) {
+    console.error(err)
+    return err instanceof Error
+      ? { success: false, message: err.message as string }
+      : { success: false, message: 'Unexpected Error' }
+  }
+}
+export async function updateAttachedActivities(data: attachActivitiesReq): Promise<Response> {
+  try {
+    const { code, activityIds } = data
+    const student = await prisma.student.update({
+      where: { code: code },
+      data: {
+        activities: {
+          set: activityIds.map((id) => ({ id }))
+        }
+      },
+      include: {
+        activities: true
+      }
+    })
+
+    return {
+      success: true,
+      message: 'Updated Successfully',
+      data: { activities: student.activities }
+    }
+  } catch (err) {
+    console.error(err)
+    return err instanceof Error
+      ? { success: false, message: err.message as string }
+      : { success: false, message: 'Unexpected Error' }
   }
 }

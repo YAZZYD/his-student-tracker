@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useStudentData } from '@renderer/composables/useStudentData'
-import StudentHeader from '@renderer/pages/students/components/show/StudentHeader.vue'
-import RadarChart from '@renderer/pages/students/components/show/RadarChart.vue'
-import SkillDetails from '@renderer/pages/students/components/show/SkillDetails.vue'
-import RatingHistory from './components/show/RatingHistory.vue'
+import StudentHeader from './components/StudentHeader.vue'
+import RadarChart from './components/RadarChart.vue'
+import SkillDetails from './components/SkillDetails.vue'
+import RatingHistory from './components/RatingHistory.vue'
+import Activities from './components/Activities.vue'
 import Error from '@renderer/components/ui/error/Error.vue'
 import Loading from '@renderer/components/ui/loading/Loading.vue'
 import { Pencil } from 'lucide-vue-next'
@@ -61,14 +62,19 @@ onMounted(() => {
           ← Back
         </button>
         <div class="flex">
-          <Button
+          <button
             variant="ghost"
             size="icon"
             class="group h-9 w-9 border border-transparent transition-all"
             title="Edit"
+            @click="
+              () => {
+                router.replace({ name: 'student-edit', params: { code: student?.code } })
+              }
+            "
           >
             <Pencil class="h-4 w-4 text-slate-400 transition-colors group-hover:text-blue-400" />
-          </Button>
+          </button>
         </div>
       </div>
 

@@ -32,15 +32,26 @@ model Admin {
 }
 
 model Grade {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  students Student[]
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  students        Student[]
+  specialtyGrades SpecialtyGrade[]
 }
 
 model Specialty {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  students Student[]
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  students        Student[]
+  specialtyGrades SpecialtyGrade[]
+}
+
+model SpecialtyGrade {
+  specialtyId Int
+  gradeId     Int
+  specialty   Specialty @relation(fields: [specialtyId], references: [id])
+  grade       Grade     @relation(fields: [gradeId], references: [id])
+
+  @@id([specialtyId, gradeId])
 }
 
 model Student {

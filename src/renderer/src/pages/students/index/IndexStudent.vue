@@ -37,7 +37,9 @@ const fetchStudents = async (p = 1): Promise<void> => {
 const showStudent = async (student: StudentCode): Promise<void> => {
   router.replace({ name: 'student-show', params: { code: student.code } })
 }
-const editStudent = (student: StudentCode): void => console.log('Edit', student)
+const editStudent = async (student: StudentCode): Promise<void> => {
+  router.replace({ name: 'student-edit', params: { code: student.code } })
+}
 const deleteStudent = async (student: StudentCode): Promise<void> => console.log('Delete', student)
 
 const prevPage = (): void => {

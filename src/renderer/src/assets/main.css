@@ -102,3 +102,23 @@ select {
 button {
   margin-top: 1vh;
 }
+
+/* Style all options globally */
+select option {
+  background-color: #1e293b; /* slate-950 */
+  color: #e5e7eb; /* gray-200 */
+  font-size: 0.875rem;
+  padding: 8px 12px;
+}
+
+/* Hover & selected (Chromium / Electron) */
+select option:hover,
+select option:checked {
+  background-color: #1e293b; /* slate-800 */
+  color: #ffffff;
+}
+
+/* Disabled placeholder */
+select option:disabled {
+  color: #64748b; /* slate-500 */
+}
