@@ -11,7 +11,7 @@ import Loading from '@renderer/components/ui/loading/Loading.vue'
 import InfoTab from './tabs/Info.vue'
 import ActivitiesTab from './tabs/Activities.vue'
 import { Activity } from '@renderer/types/students'
-// import SkillsTab from './tabs/Skills.vue'
+import SkillsTab from './tabs/Skills.vue'
 // import RatingsTab from './tabs/Ratings.vue'
 
 // ─────────────────────────────
@@ -120,7 +120,7 @@ const onActivitiesUpdated = (activities: Activity[]): void => {
           </div>
 
           <!-- Tab Content -->
-          <div class="flex-1 p-6 overflow-auto">
+          <div class="flex-1 p-10 overflow-auto">
             <InfoTab
               v-if="activeTab === 'info'"
               :student="student"
@@ -138,15 +138,16 @@ const onActivitiesUpdated = (activities: Activity[]): void => {
               @saved="resetDirty"
               @activities-updated="onActivitiesUpdated"
             />
-            <!--
+
             <SkillsTab
               v-if="activeTab === 'skills'"
               :student="student"
+              :has-unsaved-changes="hasUnsavedChanges"
               @dirty="markDirty"
               @saved="resetDirty"
             />
 
-            <RatingsTab v-if="activeTab === 'ratings'" :student="student" /> -->
+            <!-- <RatingsTab v-if="activeTab === 'ratings'" :student="student" /> -->
           </div>
         </div>
       </div>

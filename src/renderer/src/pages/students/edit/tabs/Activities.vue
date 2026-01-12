@@ -50,6 +50,7 @@ const updateAvailableActivities = (): void => {
 }
 
 const detachActivity = (activityId: number): void => {
+  if (!confirm('Are you sure you want to remove this activity?')) return
   const index = attachedActivities.value.findIndex((a) => a.id === activityId)
   if (index !== -1) {
     attachedActivities.value.splice(index, 1)
@@ -118,6 +119,33 @@ onUnmounted(() => {
     </div>
 
     <template v-else>
+      <!-- Add New Activity -->
+      <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6">
+        <div v-if="availableActivities.length" class="flex gap-3">
+          <select
+            v-model="selectedNewActivityId"
+            class="flex-1 bg-slate-900/50 border border-slate-700/50 rounded px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option :value="null" disabled>Select new activity</option>
+            <option v-for="activity in availableActivities" :key="activity.id" :value="activity.id">
+              {{ activityTypeMap[activity.type].icon }} {{ activity.name }}
+            </option>
+          </select>
+
+          <button
+            type="button"
+            class="px-4 py-2 text-sm bg-green-600 hover:bg-green-700 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded transition-colors"
+            :disabled="selectedNewActivityId === null"
+            @click="attachActivity"
+          >
+            Add
+          </button>
+        </div>
+
+        <p v-else class="text-slate-500 text-sm text-center py-4">
+          All activities are already attached
+        </p>
+      </div>
       <!-- Attached Activities -->
       <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6">
         <h2 class="text-sm font-semibold text-slate-300 mb-4">
@@ -159,36 +187,6 @@ onUnmounted(() => {
         </div>
 
         <p v-else class="text-slate-500 text-sm text-center py-8">No activities attached</p>
-      </div>
-
-      <!-- Add New Activity -->
-      <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6">
-        <h2 class="text-sm font-semibold text-slate-300 mb-4">Add New Activity</h2>
-
-        <div v-if="availableActivities.length" class="flex gap-3">
-          <select
-            v-model="selectedNewActivityId"
-            class="flex-1 bg-slate-900/50 border border-slate-700/50 rounded px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option :value="null" disabled>Select an activity</option>
-            <option v-for="activity in availableActivities" :key="activity.id" :value="activity.id">
-              {{ activityTypeMap[activity.type].icon }} {{ activity.name }}
-            </option>
-          </select>
-
-          <button
-            type="button"
-            class="px-4 py-2 text-sm bg-green-600 hover:bg-green-700 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded transition-colors"
-            :disabled="selectedNewActivityId === null"
-            @click="attachActivity"
-          >
-            Add
-          </button>
-        </div>
-
-        <p v-else class="text-slate-500 text-sm text-center py-4">
-          All activities are already attached
-        </p>
       </div>
 
       <!-- Actions -->

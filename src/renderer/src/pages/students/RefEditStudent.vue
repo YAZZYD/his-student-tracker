@@ -15,7 +15,14 @@ const props = defineProps<{ code: string }>()
 // COMPOSABLES
 // ============================================================================
 
-const { student, loading, error: studentError, fetchStudent } = useStudentData()
+const {
+  student,
+  loading,
+  error: studentError,
+  fetchStudent,
+  softSkills,
+  hardSkills
+} = useStudentData()
 
 // ============================================================================
 // STATE MANAGEMENT
@@ -800,7 +807,7 @@ onUnmounted(() => {
         </template> -->
 
         <!-- SKILLS OVERVIEW TAB -->
-        <template v-if="activeTab === 'skills'">
+        <!-- <template v-if="activeTab === 'skills'">
           <div class="grid md:grid-cols-2 gap-6">
             <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6">
               <div class="flex items-center gap-2 mb-4">
@@ -851,7 +858,7 @@ onUnmounted(() => {
               new evaluations.
             </p>
           </div>
-        </template>
+        </template> -->
 
         <!-- RATINGS TAB -->
         <template v-if="activeTab === 'ratings'">

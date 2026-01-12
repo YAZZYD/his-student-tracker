@@ -19,3 +19,10 @@ export const attachActivitiesSchema = z.object({
 })
 
 export type attachActivitiesReq = z.infer<typeof attachActivitiesSchema>
+
+export const updateStudentSkillSchema = z.object({
+  code: z.string().min(1, 'Code is required'),
+  skillIds: z.array(z.number().int().positive()).default([])
+})
+
+export type updateStudentSkillReq = z.infer<typeof updateStudentSkillSchema>

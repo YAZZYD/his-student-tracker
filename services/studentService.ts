@@ -1,4 +1,8 @@
-import { attachActivitiesReq, updateStudentInfoReq } from '@/schemas/student.schema'
+import {
+  attachActivitiesReq,
+  updateStudentSkillReq,
+  updateStudentInfoReq
+} from '@/schemas/student.schema'
 import { prisma } from '../config/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
 
@@ -126,6 +130,73 @@ export async function updateAttachedActivities(data: attachActivitiesReq): Promi
     console.error(err)
     return err instanceof Error
       ? { success: false, message: err.message as string }
+      : { success: false, message: 'Unexpected Error' }
+  }
+}
+
+export async function updateStudentSkills(data: updateStudentSkillReq): Promise<Response> {
+  const { code, skillIds } = data
+
+  try {
+    const student = await prisma.student.findFirstOrThrow({
+      where: { code }
+    })
+
+    const rating = await prisma.rating.findFirstOrThrow({
+      where: { studentId: student.id },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+    })
+
+    const existingSkillRatings = await prisma.skillRating.findMany({
+      where: { ratingId: rating.id },
+      select: { skillId: true }
+    })
+
+    const existingSkillIds = new Set(existingSkillRatings.map((sr) => sr.skillId))
+    const incomingSkillIds = new Set(skillIds)
+
+    const skillIdsToDelete = [...existingSkillIds].filter((id) => !incomingSkillIds.has(id))
+
+    await prisma.$transaction([
+      prisma.skillRating.deleteMany({
+        where: {
+          ratingId: rating.id,
+          skillId: { in: skillIdsToDelete }
+        }
+      }),
+
+      ...skillIds.map((skillId) =>
+        prisma.skillRating.upsert({
+          where: {
+            ratingId_skillId: {
+              ratingId: rating.id,
+              skillId
+            }
+          },
+          update: {},
+          create: {
+            ratingId: rating.id,
+            skillId,
+            score: 0
+          }
+        })
+      )
+    ])
+
+    const updatedSkillRatings = await prisma.skillRating.findMany({
+      where: { ratingId: rating.id },
+      include: { skill: true }
+    })
+
+    return {
+      success: true,
+      message: 'Student skills updated successfully',
+      data: { skillRatings: updatedSkillRatings }
+    }
+  } catch (err) {
+    console.error(err)
+    return err instanceof Error
+      ? { success: false, message: err.message }
       : { success: false, message: 'Unexpected Error' }
   }
 }

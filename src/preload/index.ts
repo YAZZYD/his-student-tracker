@@ -11,7 +11,10 @@ const api = {
   indexActivities: () => ipcRenderer.invoke('activity:index'),
   updateStudent: (data: updateStudentInfoReq) => ipcRenderer.invoke('student:update', data),
   updateStudentActivities: (data: attachActivitiesReq) =>
-    ipcRenderer.invoke('student:update-activities', data)
+    ipcRenderer.invoke('student:update-activities', data),
+  indexSkills: () => ipcRenderer.invoke('skill:index'),
+  updateStudentSkills: (data: updateStudentInfoReq) =>
+    ipcRenderer.invoke('student:update-skills', data)
 }
 
 if (process.contextIsolated) {

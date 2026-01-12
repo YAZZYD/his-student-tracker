@@ -5,11 +5,17 @@ import {
   indexStudents,
   showStudent,
   updateAttachedActivities,
-  updateStudent
+  updateStudent,
+  updateStudentSkills
 } from '../services/studentService'
 import { indexSpecialtiesWithGrades } from '../services/academicCatalogService'
-import type { updateStudentInfoReq, attachActivitiesReq } from '../schemas/student.schema'
+import type {
+  updateStudentInfoReq,
+  attachActivitiesReq,
+  updateStudentSkillReq
+} from '../schemas/student.schema'
 import { indexActivities } from '../services/activityService'
+import { indexSkills } from '../services/skillService'
 export function registerIpcHandler(): void {
   ipcMain.handle(
     'auth:login',
@@ -42,5 +48,13 @@ export function registerIpcHandler(): void {
     'student:update-activities',
     async (_event, data: attachActivitiesReq): Promise<Response> =>
       await updateAttachedActivities(data)
+  )
+
+  ipcMain.handle('skill:index', async (): Promise<Response> => await indexSkills())
+
+  ipcMain.handle(
+    'student:update-skills',
+    async (_event, data: updateStudentSkillReq): Promise<Response> =>
+      await updateStudentSkills(data)
   )
 }
