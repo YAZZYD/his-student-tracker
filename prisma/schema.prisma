@@ -83,7 +83,7 @@ model Activity {
 model Rating {
   id           Int           @id @default(autoincrement())
   studentId    Int
-  comments     String?
+  comment      String?
   createdAt    DateTime      @default(now())
   udpatedAt    DateTime      @updatedAt
   student      Student       @relation(fields: [studentId], references: [id])

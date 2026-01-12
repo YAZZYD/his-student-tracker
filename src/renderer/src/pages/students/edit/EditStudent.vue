@@ -10,9 +10,9 @@ import Loading from '@renderer/components/ui/loading/Loading.vue'
 
 import InfoTab from './tabs/Info.vue'
 import ActivitiesTab from './tabs/Activities.vue'
-import { Activity } from '@renderer/types/students'
+import { Activity } from '@renderer/types/models'
 import SkillsTab from './tabs/Skills.vue'
-// import RatingsTab from './tabs/Ratings.vue'
+import RatingsTab from './tabs/Ratings.vue'
 
 // ─────────────────────────────
 // routing
@@ -23,7 +23,7 @@ const studentCode = route.params.code as string
 // ─────────────────────────────
 // data
 // ─────────────────────────────
-const { student, fetchStudent, loading, error } = useStudentData()
+const { student, fetchStudent, softSkills, hardSkills, loading, error } = useStudentData()
 
 // ─────────────────────────────
 // unsaved changes handling
@@ -147,7 +147,12 @@ const onActivitiesUpdated = (activities: Activity[]): void => {
               @saved="resetDirty"
             />
 
-            <!-- <RatingsTab v-if="activeTab === 'ratings'" :student="student" /> -->
+            <RatingsTab
+              v-if="activeTab === 'ratings'"
+              :student="student"
+              :soft-skills="softSkills"
+              :hard-skills="hardSkills"
+            />
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getRatingColor, formatDate } from '@renderer/lib/format.utils'
-import { StudentWithRelations } from '@renderer/types/students'
+import { StudentWithRelations } from '@renderer/types/models'
 
 interface Props {
   student: StudentWithRelations
@@ -33,8 +33,8 @@ const props = defineProps<Props>()
             }}
           </span>
         </div>
-        <p v-if="rating.comments" class="text-xs text-slate-300 mb-2 italic">
-          "{{ rating.comments }}"
+        <p v-if="rating.comment" class="text-xs text-slate-300 mb-2 italic">
+          "{{ rating.comment }}"
         </p>
         <div class="flex flex-wrap gap-1.5">
           <span

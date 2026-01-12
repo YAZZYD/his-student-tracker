@@ -16,6 +16,7 @@ import type {
 } from '../schemas/student.schema'
 import { indexActivities } from '../services/activityService'
 import { indexSkills } from '../services/skillService'
+import { createRating, deleteRating, updateRating } from '../services/ratingService'
 export function registerIpcHandler(): void {
   ipcMain.handle(
     'auth:login',
@@ -56,5 +57,19 @@ export function registerIpcHandler(): void {
     'student:update-skills',
     async (_event, data: updateStudentSkillReq): Promise<Response> =>
       await updateStudentSkills(data)
+  )
+
+  ipcMain.handle(
+    'rating:create',
+    async (_event, payload): Promise<Response> => await createRating(payload)
+  )
+  ipcMain.handle(
+    'rating:update',
+    async (_event, payload): Promise<Response> => await updateRating(payload)
+  )
+
+  ipcMain.handle(
+    'rating:delete',
+    async (_event, ratingId: number): Promise<Response> => await deleteRating(ratingId)
   )
 }

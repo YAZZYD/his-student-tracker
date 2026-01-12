@@ -122,3 +122,18 @@ select option:checked {
 select option:disabled {
   color: #64748b; /* slate-500 */
 }
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(100px) scale(0.95);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+}

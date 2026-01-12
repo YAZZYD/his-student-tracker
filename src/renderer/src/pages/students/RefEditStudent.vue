@@ -45,7 +45,7 @@ const selectedActivityIds = ref<Set<number>>(new Set())
 
 // Rating form
 const selectedSkillsForRating = ref<Map<number, number>>(new Map())
-const ratingComments = ref('')
+const rating comment = ref('')
 const showRatingForm = ref(false)
 
 // Change tracking
@@ -271,7 +271,7 @@ const submitRating = async () => {
 
   //   const result = await window.api.invoke('create-rating', {
   //     studentCode: route.params.code,
-  //     comments: ratingComments.value.trim() || null,
+  //      comment: rating comment.value.trim() || null,
   //     skillRatings
   //   })
 
@@ -282,7 +282,7 @@ const submitRating = async () => {
 
   //   // Reset form
   //   selectedSkillsForRating.value.clear()
-  //   ratingComments.value = ''
+  //   rating comment.value = ''
   //   showRatingForm.value = false
 
   //   successMessage.value = 'Rating submitted successfully'
@@ -1071,12 +1071,12 @@ onUnmounted(() => {
                 </div>
 
                 <div>
-                  <label for="comments" class="block text-xs font-medium text-slate-400 mb-2">
-                    Comments (Optional)
+                  <label for=" comment" class="block text-xs font-medium text-slate-400 mb-2">
+                    comment (Optional)
                   </label>
                   <textarea
-                    id="comments"
-                    v-model="ratingComments"
+                    id=" comment"
+                    v-model="rating comment"
                     rows="3"
                     placeholder="Add any additional notes or feedback..."
                     class="w-full bg-slate-900/50 border border-slate-700/50 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
@@ -1156,8 +1156,8 @@ onUnmounted(() => {
                     </button>
                   </div>
 
-                  <p v-if="rating.comments" class="text-xs text-slate-300 mb-3 italic">
-                    "{{ rating.comments }}"
+                  <p v-if="rating.comment" class="text-xs text-slate-300 mb-3 italic">
+                    "{{ rating.comment }}"
                   </p>
 
                   <div class="flex flex-wrap gap-2">

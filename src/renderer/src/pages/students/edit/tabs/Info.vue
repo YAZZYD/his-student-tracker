@@ -4,7 +4,7 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { watch, ref, computed, onMounted, nextTick } from 'vue'
 import { updateStudentInfoSchema } from '@/schemas/student.schema'
-import { Student } from '@renderer/types/students'
+import { Student } from '@renderer/types/models'
 import { useToast } from '@renderer/composables/useToast'
 import { useRouter } from 'vue-router'
 

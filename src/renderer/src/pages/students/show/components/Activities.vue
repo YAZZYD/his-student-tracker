@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { activityTypeMap } from '@renderer/constants/activity.constants'
-import { StudentWithRelations } from '@renderer/types/students'
+import { StudentWithRelations } from '@renderer/types/models'
 
 interface Props {
   student: StudentWithRelations

@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { updateStudentInfoReq, attachActivitiesReq } from '@/schemas/student.schema'
+import { CreateRatingReq, updateRatingReq } from '@/schemas/rating.schema'
 
 const api = {
   authenticate: (username: string, password: string) =>
@@ -14,7 +15,10 @@ const api = {
     ipcRenderer.invoke('student:update-activities', data),
   indexSkills: () => ipcRenderer.invoke('skill:index'),
   updateStudentSkills: (data: updateStudentInfoReq) =>
-    ipcRenderer.invoke('student:update-skills', data)
+    ipcRenderer.invoke('student:update-skills', data),
+  createRating: (payload: CreateRatingReq) => ipcRenderer.invoke('rating:create', payload),
+  updateRating: (payload: updateRatingReq) => ipcRenderer.invoke('rating:update', payload),
+  deleteRating: (ratingId: number) => ipcRenderer.invoke('rating:delete', ratingId)
 }
 
 if (process.contextIsolated) {

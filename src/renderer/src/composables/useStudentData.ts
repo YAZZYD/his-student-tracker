@@ -3,7 +3,7 @@ import {
   StudentWithRelations as Student,
   SkillAvg,
   SkillRatingWithRelations as SkillRating
-} from '@renderer/types/students'
+} from '@renderer/types/models'
 
 import { getVertexPosition } from '@renderer/lib/geometry.utils'
 

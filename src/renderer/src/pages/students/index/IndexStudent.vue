@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import StudentRow from './components/index/StudentRow.vue'
 import type { ResponseSchema as Response } from '@/schemas/response.schema'
-import type { StudentHeadInfo, StudentCode } from '@renderer/types/students'
+import type { StudentHeadInfo, StudentCode } from '@renderer/types/models'
 import { router } from '@renderer/router'
 
 interface Meta {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@renderer/components/ui/button'
 import { Eye, Edit, Trash } from 'lucide-vue-next'
-import type { StudentHeadInfo, StudentCode } from '@renderer/types/students'
+import type { StudentHeadInfo, StudentCode } from '@renderer/types/models'
 import { computed } from 'vue'
 
 const props = defineProps<{ student: StudentHeadInfo }>()

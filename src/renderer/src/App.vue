@@ -11,11 +11,11 @@ const { toastMessage, toastType, toastVisible } = useToast()
   <transition name="toast">
     <div
       v-if="toastVisible"
-      class="fixed top-5 right-5 z-50 px-4 py-3 rounded-md shadow-lg text-sm text-white"
+      class="fixed top-5 right-5 z-50 px-4 py-3 rounded-lg shadow-2xl text-sm backdrop-blur-sm border"
       :class="{
-        'bg-green-600': toastType === 'success',
-        'bg-red-600': toastType === 'error',
-        'bg-sky-600': toastType === 'info'
+        'bg-green-950/90 border-green-500/40 text-green-300': toastType === 'success',
+        'bg-red-950/90 border-red-500/40 text-red-300': toastType === 'error',
+        'bg-blue-950/90 border-blue-500/40 text-blue-300': toastType === 'info'
       }"
     >
       {{ toastMessage }}

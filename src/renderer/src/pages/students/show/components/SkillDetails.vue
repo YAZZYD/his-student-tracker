@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getRatingColor } from '@renderer/lib/format.utils'
-import { SkillAvg } from '@renderer/types/students'
+import { SkillAvg } from '@renderer/types/models'
 
 interface Skills {
   softSkills: SkillAvg[]

@@ -3,7 +3,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { activityTypeMap } from '@renderer/constants/activity.constants'
 import { useToast } from '@renderer/composables/useToast'
-import type { Activity } from '@renderer/types/students'
+import { Plus } from 'lucide-vue-next'
+import type { Activity } from '@renderer/types/models'
 
 interface Props {
   studentActivities: Activity[]
@@ -134,11 +135,11 @@ onUnmounted(() => {
 
           <button
             type="button"
-            class="px-4 py-2 text-sm bg-green-600 hover:bg-green-700 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded transition-colors"
+            class="px-4 py-2 text-sm bg-green-950/40 hover:bg-green-950/60 disabled:bg-slate-700/50 disabled:text-slate-500 text-green-400 hover:text-green-300 border border-green-500/30 hover:border-green-500/50 disabled:border-slate-700/30 rounded transition-colors flex items-center gap-2"
             :disabled="selectedNewActivityId === null"
             @click="attachActivity"
           >
-            Add
+            <Plus :size="16" />
           </button>
         </div>
 

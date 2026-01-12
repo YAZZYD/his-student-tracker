@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StudentWithRelations } from '@renderer/types/students'
+import type { StudentWithRelations } from '@renderer/types/models'
 
 interface Props {
   student: StudentWithRelations

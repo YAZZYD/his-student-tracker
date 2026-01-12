@@ -17,7 +17,7 @@ export type StudentCode = Pick<Student, 'code'>
 
 export type { Skill_Type, Activity_Type }
 
-export type { SkillRating, Rating, Activity, Grade, Specialty, Student }
+export type { SkillRating, Rating, Activity, Grade, Specialty, Student, Skill, SkillRating }
 
 export interface SkillAvg {
   skill: Skill

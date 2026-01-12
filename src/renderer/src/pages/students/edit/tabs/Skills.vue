@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
-import type { StudentWithRelations } from '@renderer/types/students'
+import type { StudentWithRelations } from '@renderer/types/models'
 import type { Skill } from '@/prisma/generated/client'
 import { SkillTypeMap } from '@renderer/constants/skill.constants'
 import { useToast } from '@renderer/composables/useToast'
@@ -148,7 +148,6 @@ onUnmounted(() => {
       <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <span class="text-lg">➕</span>
             <h3 class="text-sm font-semibold text-slate-300">Attach Skill</h3>
           </div>
           <button

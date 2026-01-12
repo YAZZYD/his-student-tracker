@@ -139,11 +139,13 @@ export async function updateStudentSkills(data: updateStudentSkillReq): Promise<
 
   try {
     const student = await prisma.student.findFirstOrThrow({
-      where: { code }
+      where: { code },
+      select: { id: true }
     })
 
     const rating = await prisma.rating.findFirstOrThrow({
       where: { studentId: student.id },
+      select: { id: true },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
     })
 

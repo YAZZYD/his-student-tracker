@@ -1,5 +1,6 @@
 import type { ElectronAPI } from '@electron-toolkit/preload'
 import type { ResponseSchema } from '@/schemas/response.schema'
+import type { CreateRatingReq, updateRatingReq } from '@/schemas/rating.schema'
 import type {
   updateStudentInfoReq,
   attachActivitiesReq,
@@ -19,6 +20,9 @@ declare global {
       updateStudentActivities(data: attachActivitiesReq): Promise<ResponseSchema>
       indexSkills(): Promise<ResponseSchema>
       updateStudentSkills(data: updateStudentSkillReq): Promise<ResponseSchema>
+      createRating(payload: CreateRatingReq): Promise<ResponseSchema>
+      updateRating(payload: updateRatingReq): Promise<ResponseSchema>
+      deleteRating(ratingId: number): Promise<ResponseSchema>
     }
   }
 }
