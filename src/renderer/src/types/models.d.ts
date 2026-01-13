@@ -1,7 +1,7 @@
 import type { Skill_Type, Activity_Type, Skill, Prisma } from '@/prisma/generated/client'
 import type {
-  SkillRating,
-  Rating,
+  SkillEvaluation,
+  Evaluation,
   Activity,
   Grade,
   Specialty,
@@ -17,7 +17,16 @@ export type StudentCode = Pick<Student, 'code'>
 
 export type { Skill_Type, Activity_Type }
 
-export type { SkillRating, Rating, Activity, Grade, Specialty, Student, Skill, SkillRating }
+export type {
+  SkillEvaluation,
+  Evaluation,
+  Activity,
+  Grade,
+  Specialty,
+  Student,
+  Skill,
+  SkillEvaluation
+}
 
 export interface SkillAvg {
   skill: Skill
@@ -29,9 +38,9 @@ export type StudentWithRelations = Prisma.StudentGetPayload<{
     grade: true
     specialty: true
     activities: true
-    ratings: {
+    evaluations: {
       include: {
-        skillRatings: {
+        skillEvaluations: {
           include: {
             skill: true
           }
@@ -41,14 +50,14 @@ export type StudentWithRelations = Prisma.StudentGetPayload<{
   }
 }>
 
-export type SkillRatingWithRelations = Prisma.SkillRatingGetPayload<{
+export type SkillEvaluationWithRelations = Prisma.SkillEvaluationGetPayload<{
   include: {
     skill: true
   }
 }>
-export type RatingWithRelations = Prisma.RatingGetPayload<{
+export type EvaluationWithRelations = Prisma.EvaluationGetPayload<{
   include: {
-    skillRatings: {
+    skillEvaluations: {
       include: {
         skill: true
       }

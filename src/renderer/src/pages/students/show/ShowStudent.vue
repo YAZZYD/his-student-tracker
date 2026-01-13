@@ -4,7 +4,7 @@ import { useStudentData } from '@renderer/composables/useStudentData'
 import StudentHeader from './components/StudentHeader.vue'
 import RadarChart from './components/RadarChart.vue'
 import SkillDetails from './components/SkillDetails.vue'
-import RatingHistory from './components/RatingHistory.vue'
+import EvaluationHistory from './components/EvaluationHistory.vue'
 import Activities from './components/Activities.vue'
 import Error from '@renderer/components/ui/error/Error.vue'
 import Loading from '@renderer/components/ui/loading/Loading.vue'
@@ -18,7 +18,7 @@ const {
   error,
   softSkills,
   hardSkills,
-  overallRating,
+  overallEvaluation,
   fetchStudent,
   age,
   softSkillsAverage,
@@ -28,7 +28,7 @@ const {
 } = useStudentData()
 
 const metrics = computed(() => ({
-  overallRating: overallRating.value,
+  overallEvaluation: overallEvaluation.value,
   softSkillsAverage: softSkillsAverage.value,
   hardSkillsAverage: hardSkillsAverage.value,
   engagementScore: engagementScore.value,
@@ -82,7 +82,7 @@ onMounted(() => {
       <RadarChart :metrics="metrics" />
       <SkillDetails :skills="skills" />
       <Activities :student="student" />
-      <RatingHistory :student="student" />
+      <EvaluationHistory :student="student" />
     </template>
   </div>
 </template>

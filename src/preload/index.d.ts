@@ -1,11 +1,12 @@
 import type { ElectronAPI } from '@electron-toolkit/preload'
 import type { ResponseSchema } from '@/schemas/response.schema'
-import type { CreateRatingReq, updateRatingReq } from '@/schemas/rating.schema'
+import type { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluationtion.schema'
 import type {
   updateStudentInfoReq,
   attachActivitiesReq,
   updateStudentSkillReq
 } from '@/schemas/student.schema'
+import { createSkillReq } from '@/schemas/skill.schema'
 
 declare global {
   interface Window {
@@ -20,9 +21,11 @@ declare global {
       updateStudentActivities(data: attachActivitiesReq): Promise<ResponseSchema>
       indexSkills(): Promise<ResponseSchema>
       updateStudentSkills(data: updateStudentSkillReq): Promise<ResponseSchema>
-      createRating(payload: CreateRatingReq): Promise<ResponseSchema>
-      updateRating(payload: updateRatingReq): Promise<ResponseSchema>
-      deleteRating(ratingId: number): Promise<ResponseSchema>
+      createEvaluation(payload: CreateEvaluationReq): Promise<ResponseSchema>
+      updateEvaluation(payload: updateEvaluationReq): Promise<ResponseSchema>
+      deleteEvaluation(evaluationId: number): Promise<ResponseSchema>
+      createSkill(payload: createSkillReq): Promise<ResponseSchema>
+      deleteSkill(skillId: number): Promise<ResponseSchema>
     }
   }
 }

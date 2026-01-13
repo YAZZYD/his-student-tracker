@@ -1,13 +1,13 @@
 import { computed, WritableComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-export type StudentTab = 'info' | 'activities' | 'skills' | 'ratings'
+export type StudentTab = 'info' | 'activities' | 'skills' | 'evaluations'
 
 const tabs = [
   { key: 'info', label: 'Basic Information' },
   { key: 'activities', label: 'Activities' },
   { key: 'skills', label: 'Skills Overview' },
-  { key: 'ratings', label: 'Ratings' }
+  { key: 'evaluations', label: 'Evaluations' }
 ] as const
 
 type Tabs = typeof tabs

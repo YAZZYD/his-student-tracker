@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getRatingColor } from '@renderer/lib/format.utils'
+import { getEvaluationColor } from '@renderer/lib/format.utils'
 import { SkillAvg } from '@renderer/types/models'
 
 interface Skills {
@@ -20,7 +20,10 @@ const { softSkills, hardSkills } = skills
         <div v-for="item in softSkills" :key="item.skill.id">
           <div class="flex items-center justify-between mb-1">
             <span class="text-xs text-slate-400">{{ item.skill.name }}</span>
-            <span class="text-xs font-semibold" :style="{ color: getRatingColor(item.average) }">
+            <span
+              class="text-xs font-semibold"
+              :style="{ color: getEvaluationColor(item.average) }"
+            >
               {{ item.average }}
             </span>
           </div>
@@ -29,7 +32,7 @@ const { softSkills, hardSkills } = skills
               class="h-full rounded-full transition-all duration-300"
               :style="{
                 width: `${item.average}%`,
-                backgroundColor: getRatingColor(item.average)
+                backgroundColor: getEvaluationColor(item.average)
               }"
             ></div>
           </div>
@@ -45,7 +48,10 @@ const { softSkills, hardSkills } = skills
         <div v-for="item in hardSkills" :key="item.skill.id">
           <div class="flex items-center justify-between mb-1">
             <span class="text-xs text-slate-400">{{ item.skill.name }}</span>
-            <span class="text-xs font-semibold" :style="{ color: getRatingColor(item.average) }">
+            <span
+              class="text-xs font-semibold"
+              :style="{ color: getEvaluationColor(item.average) }"
+            >
               {{ item.average }}
             </span>
           </div>
@@ -54,7 +60,7 @@ const { softSkills, hardSkills } = skills
               class="h-full rounded-full transition-all duration-300"
               :style="{
                 width: `${item.average}%`,
-                backgroundColor: getRatingColor(item.average)
+                backgroundColor: getEvaluationColor(item.average)
               }"
             ></div>
           </div>

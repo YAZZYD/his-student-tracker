@@ -48,27 +48,27 @@ model Specialty {
 model SpecialtyGrade {
   specialtyId Int
   gradeId     Int
-  specialty   Specialty @relation(fields: [specialtyId], references: [id])
-  grade       Grade     @relation(fields: [gradeId], references: [id])
+  specialty   Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade)
+  grade       Grade     @relation(fields: [gradeId], references: [id], onDelete: Cascade)
 
   @@id([specialtyId, gradeId])
 }
 
 model Student {
-  id              Int        @id @default(autoincrement())
-  code            String     @unique
-  name            String     @unique
-  email           String     @unique
+  id              Int          @id @default(autoincrement())
+  code            String       @unique
+  name            String       @unique
+  email           String       @unique
   birth_date      DateTime
   birth_place     String
   enrollment_year DateTime
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
   gradeId         Int
   specialtyId     Int
-  grade           Grade      @relation(fields: [gradeId], references: [id])
-  specialty       Specialty  @relation(fields: [specialtyId], references: [id])
-  ratings         Rating[]
+  grade           Grade        @relation(fields: [gradeId], references: [id], onDelete: Restrict)
+  specialty       Specialty    @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+  evaluations     Evaluation[]
   activities      Activity[]
 }
 
@@ -80,30 +80,30 @@ model Activity {
   students    Student[]
 }
 
-model Rating {
-  id           Int           @id @default(autoincrement())
-  studentId    Int
-  comment      String?
-  createdAt    DateTime      @default(now())
-  udpatedAt    DateTime      @updatedAt
-  student      Student       @relation(fields: [studentId], references: [id])
-  skillRatings SkillRating[]
+model Evaluation {
+  id               Int               @id @default(autoincrement())
+  studentId        Int
+  comment          String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  student          Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  skillEvaluations SkillEvaluation[]
 }
 
 model Skill {
-  id          Int           @id @default(autoincrement())
-  name        String        @unique
-  description String        @unique
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  description String            @unique
   type        Skill_Type
-  rating      SkillRating[]
+  evaluation  SkillEvaluation[]
 }
 
-model SkillRating {
-  ratingId Int
-  skillId  Int
-  score    Int
-  rating   Rating @relation(fields: [ratingId], references: [id])
-  skill    Skill  @relation(fields: [skillId], references: [id])
+model SkillEvaluation {
+  evaluationId Int
+  skillId      Int
+  score        Int?
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+  skill        Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
-  @@id([ratingId, skillId])
+  @@id([evaluationId, skillId])
 }

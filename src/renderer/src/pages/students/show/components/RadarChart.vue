@@ -5,14 +5,14 @@ import {
   getVertexPosition
 } from '@renderer/lib/geometry.utils'
 
-import { getRatingColor } from '@renderer/lib/format.utils'
+import { getEvaluationColor } from '@renderer/lib/format.utils'
 
 interface Metrics {
   softSkillsAverage: number
   hardSkillsAverage: number
   engagementScore: number
   getDataPoints: { x: number; y: number }[]
-  overallRating: number
+  overallEvaluation: number
   activitiesCount: number
 }
 
@@ -23,7 +23,7 @@ const {
   hardSkillsAverage,
   engagementScore,
   getDataPoints,
-  overallRating,
+  overallEvaluation,
   activitiesCount
 } = metrics
 </script>
@@ -174,11 +174,14 @@ const {
         </svg>
       </div>
 
-      <!-- Overall Rating -->
+      <!-- Overall Evaluation -->
       <div class="flex flex-col items-center">
-        <p class="text-xs text-slate-400 uppercase tracking-wide mb-2">Overall Rating</p>
-        <div class="text-6xl font-bold mb-2" :style="{ color: getRatingColor(overallRating) }">
-          {{ overallRating }}
+        <p class="text-xs text-slate-400 uppercase tracking-wide mb-2">Overall Evaluation</p>
+        <div
+          class="text-6xl font-bold mb-2"
+          :style="{ color: getEvaluationColor(overallEvaluation) }"
+        >
+          {{ overallEvaluation }}
         </div>
         <p class="text-xs text-slate-500">{{ activitiesCount }} activities total</p>
       </div>

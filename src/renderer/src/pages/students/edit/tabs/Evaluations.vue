@@ -1,191 +1,193 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRatingManagement } from '@renderer/composables/useRatingManagement'
+import { onMounted, ref } from 'vue'
+import { useEvaluationManagement } from '@renderer/composables/useEvaluationManagement'
 import { useRoute } from 'vue-router'
+import { Check, Plus, Trash2, Pencil, ChevronDown } from 'lucide-vue-next'
+
 import type {
-  RatingWithRelations as Rating,
-  SkillAvg,
-  SkillRating,
+  EvaluationWithRelations as Evaluation,
+  SkillEvaluation,
   StudentWithRelations
 } from '@renderer/types/models'
-import { formatDate, getRatingColor } from '@renderer/lib/format.utils'
-import { Pencil, Trash2 } from 'lucide-vue-next'
+import { formatDate, getEvaluationColor } from '@renderer/lib/format.utils'
+import Error from '@renderer/components/ui/error/Error.vue'
+import Loading from '@renderer/components/ui/loading/Loading.vue'
+import { SkillTypeMap } from '@renderer/constants/skill.constants'
 
 interface Props {
   student: StudentWithRelations
-  softSkills: SkillAvg[]
-  hardSkills: SkillAvg[]
 }
 
 const route = useRoute()
 
 const {
-  editingRatingId,
-  selectedSkillsForRating,
+  loading,
+  error,
+  softSkills,
+  hardSkills,
+  editingEvaluationId,
+  selectedSkillsForEvaluation,
   comment,
   submitting,
-  canSubmitRating,
-  toggleSkillForRating,
+  canSubmitEvaluation,
+  toggleSkillForEvaluation,
   updateSkillScore,
-  startEditRating: startEdit,
+  startEditEvaluation: startEdit,
   cancelEdit: cancel,
-  submitRating,
-  deleteRating
-} = useRatingManagement(route.params.code as string)
-const showRatingForm = ref(false)
+  submitEvaluation,
+  deleteEvaluation,
+  fetchSkills
+} = useEvaluationManagement(route.params.code as string)
+const showEvaluationForm = ref(false)
 
 //eslint-disable-next-line
 const props = defineProps<Props>()
 
-function calculateAverage(skillRatings: SkillRating[]): number {
-  if (!skillRatings.length) return 0
-  return Math.round(skillRatings.reduce((sum, sr) => sum + sr.score, 0) / skillRatings.length)
+function calculateAverage(skillEvaluations: SkillEvaluation[]): number {
+  const validScores = skillEvaluations
+    .map((sr) => sr.score)
+    .filter((score): score is number => score != null)
+
+  if (!validScores.length) return 0
+
+  return Math.round(validScores.reduce((sum, score) => sum + score, 0) / validScores.length)
 }
 
-function startEditRating(rating: Rating): void {
-  startEdit(rating)
-  showRatingForm.value = true
+function startEditEvaluation(evaluation: Evaluation): void {
+  startEdit(evaluation)
+  showEvaluationForm.value = true
 }
 
 function cancelEdit(): void {
   cancel()
-  showRatingForm.value = false
+  showEvaluationForm.value = false
 }
 
-async function handleSubmitRating(): Promise<void> {
-  const response = await submitRating()
+async function handleSubmitEvaluation(): Promise<void> {
+  const response = await submitEvaluation()
   if (response?.success) {
-    showRatingForm.value = false
+    showEvaluationForm.value = false
     // Refresh student data
     // await fetchStudent(route.params.code as string)
   }
 }
 
-async function handleDeleteRating(ratingId: number): Promise<void> {
-  const response = await deleteRating(ratingId)
+async function handleDeleteEvaluation(evaluationId: number): Promise<void> {
+  const response = await deleteEvaluation(evaluationId)
   if (response?.success) {
     // await fetchStudent(route.params.code as string)
   }
 }
+onMounted(async () => {
+  await fetchSkills()
+})
 </script>
 
 <!-- Updated template section with edit functionality -->
 <template>
   <div class="space-y-6">
-    <!-- Rating Form (Create/Edit) -->
+    <Loading v-if="loading" />
+    <Error v-else-if="error" :error="error" />
+
+    <!-- Evaluation Form (Create/Edit) -->
     <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg overflow-hidden">
       <button
-        @click="showRatingForm = !showRatingForm"
         type="button"
         class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-800/50 transition-colors"
+        @click="showEvaluationForm = !showEvaluationForm"
       >
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-            <span class="text-blue-400 text-sm">{{ editingRatingId ? '✎' : '+' }}</span>
+            <Pencil v-if="editingEvaluationId" class="w-4 h-4 text-blue-400" :stroke-width="2" />
+            <Plus v-else class="w-4 h-4 text-blue-400" :stroke-width="2" />
           </div>
+
           <span class="text-sm font-medium text-slate-300">
-            {{ editingRatingId ? 'Edit Rating' : 'Add New Rating' }}
+            {{ editingEvaluationId ? 'Edit Evaluation' : 'Add New Evaluation' }}
           </span>
         </div>
-        <svg
+
+        <ChevronDown
           class="w-4 h-4 text-slate-400 transition-transform"
-          :class="{ 'rotate-180': showRatingForm }"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+          :class="{ 'rotate-180': showEvaluationForm }"
+          :stroke-width="2"
+        />
       </button>
 
-      <div v-if="showRatingForm" class="px-6 pb-6 space-y-5 border-t border-slate-700/50">
+      <div v-if="showEvaluationForm" class="px-6 pb-6 space-y-5 border-t border-slate-700/50">
         <div class="pt-5">
           <h3 class="text-sm font-medium text-slate-300 mb-3">
-            Select Skills & Assign Scores ({{ selectedSkillsForRating.size }} selected)
+            Select Skills & Assign Scores ({{ selectedSkillsForEvaluation.size }} selected)
           </h3>
 
-          <div class="space-y-4">
+          <div class="space-y-4 max-h-[30vh] overflow-y-auto pr-2">
             <div v-if="softSkills.length">
-              <p class="text-xs text-purple-400 mb-2 flex items-center gap-1">
-                <span>🧠</span>
+              <p class="text-s text-purple-400 mb-2 flex items-center gap-1">
+                <component :is="SkillTypeMap['SOFT'].icon" class="inline w-4 h-4 mr-1" />
                 <span>Soft Skills</span>
               </p>
               <div class="space-y-2">
                 <div
                   v-for="skill in softSkills"
-                  :key="skill.skill.id"
+                  :key="skill.id"
                   class="border rounded p-3 transition-all"
                   :class="
-                    selectedSkillsForRating.has(skill.skill.id)
+                    selectedSkillsForEvaluation.has(skill.id)
                       ? 'border-purple-500/50 bg-purple-500/5'
                       : 'border-slate-700/30 hover:border-slate-600/50'
                   "
                 >
                   <div class="flex items-center gap-3">
                     <button
-                      @click="toggleSkillForRating(skill.skill.id)"
                       type="button"
-                      class="flex-shrink-0 w-5 h-5 rounded border-2 transition-colors flex items-center justify-center"
+                      class="shrink-0 w-5 h-5 rounded border-2 transition-colors flex items-center justify-center"
                       :class="
-                        selectedSkillsForRating.has(skill.skill.id)
+                        selectedSkillsForEvaluation.has(skill.id)
                           ? 'border-purple-500 bg-purple-500'
                           : 'border-slate-600 hover:border-slate-500'
                       "
+                      @click="toggleSkillForEvaluation(skill.id)"
                     >
-                      <svg
-                        v-if="selectedSkillsForRating.has(skill.skill.id)"
+                      <Check
+                        v-if="selectedSkillsForEvaluation.has(skill.id)"
                         class="w-3 h-3 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="3"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                        :stroke-width="3"
+                      />
                     </button>
 
                     <div class="flex-1 min-w-0">
-                      <p class="text-xs font-medium text-slate-300">{{ skill.skill.name }}</p>
+                      <p class="text-xs font-medium text-slate-300">{{ skill.name }}</p>
                     </div>
 
                     <div
-                      v-if="selectedSkillsForRating.has(skill.skill.id)"
-                      class="flex items-center gap-2 flex-shrink-0"
+                      v-if="selectedSkillsForEvaluation.has(skill.id)"
+                      class="flex items-center gap-2 shrink-0"
                     >
                       <input
                         type="number"
                         min="0"
                         max="100"
-                        :value="selectedSkillsForRating.get(skill.skill.id)"
+                        class="w-16 bg-slate-900/50 border border-slate-700/50 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        :value="selectedSkillsForEvaluation.get(skill.id)"
                         @input="
                           updateSkillScore(
-                            skill.skill.id,
+                            skill.id,
                             parseInt(($event.target as HTMLInputElement).value) || 0
                           )
                         "
-                        class="w-16 bg-slate-900/50 border border-slate-700/50 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                       <input
                         type="range"
                         min="0"
                         max="100"
-                        :value="selectedSkillsForRating.get(skill.skill.id)"
+                        class="w-24"
+                        :value="selectedSkillsForEvaluation.get(skill.id)"
                         @input="
                           updateSkillScore(
-                            skill.skill.id,
+                            skill.id,
                             parseInt(($event.target as HTMLInputElement).value)
                           )
                         "
-                        class="w-24"
                       />
                     </div>
                   </div>
@@ -195,80 +197,71 @@ async function handleDeleteRating(ratingId: number): Promise<void> {
 
             <div v-if="hardSkills.length">
               <p class="text-xs text-cyan-400 mb-2 flex items-center gap-1">
-                <span>⚙️</span>
+                <component :is="SkillTypeMap['HARD'].icon" class="inline w-4 h-4 mr-1" />
                 <span>Hard Skills</span>
               </p>
               <div class="space-y-2">
                 <div
                   v-for="skill in hardSkills"
-                  :key="skill.skill.id"
+                  :key="skill.id"
                   class="border rounded p-3 transition-all"
                   :class="
-                    selectedSkillsForRating.has(skill.skill.id)
+                    selectedSkillsForEvaluation.has(skill.id)
                       ? 'border-cyan-500/50 bg-cyan-500/5'
                       : 'border-slate-700/30 hover:border-slate-600/50'
                   "
                 >
                   <div class="flex items-center gap-3">
                     <button
-                      @click="toggleSkillForRating(skill.skill.id)"
                       type="button"
-                      class="flex-shrink-0 w-5 h-5 rounded border-2 transition-colors flex items-center justify-center"
+                      class="shrink-0 w-5 h-5 rounded border-2 transition-colors flex items-center justify-center"
                       :class="
-                        selectedSkillsForRating.has(skill.skill.id)
+                        selectedSkillsForEvaluation.has(skill.id)
                           ? 'border-cyan-500 bg-cyan-500'
                           : 'border-slate-600 hover:border-slate-500'
                       "
+                      @click="toggleSkillForEvaluation(skill.id)"
                     >
-                      <svg
-                        v-if="selectedSkillsForRating.has(skill.skill.id)"
+                      <Check
+                        v-if="selectedSkillsForEvaluation.has(skill.id)"
                         class="w-3 h-3 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="3"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                        :stroke-width="3"
+                      />
                     </button>
 
                     <div class="flex-1 min-w-0">
-                      <p class="text-xs font-medium text-slate-300">{{ skill.skill.name }}</p>
+                      <p class="text-xs font-medium text-slate-300">{{ skill.name }}</p>
                     </div>
 
                     <div
-                      v-if="selectedSkillsForRating.has(skill.skill.id)"
-                      class="flex items-center gap-2 flex-shrink-0"
+                      v-if="selectedSkillsForEvaluation.has(skill.id)"
+                      class="flex items-center gap-2 shrink-0"
                     >
                       <input
                         type="number"
                         min="0"
                         max="100"
-                        :value="selectedSkillsForRating.get(skill.skill.id)"
+                        class="w-16 bg-slate-900/50 border border-slate-700/50 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        :value="selectedSkillsForEvaluation.get(skill.id)"
                         @input="
                           updateSkillScore(
-                            skill.skill.id,
+                            skill.id,
                             parseInt(($event.target as HTMLInputElement).value) || 0
                           )
                         "
-                        class="w-16 bg-slate-900/50 border border-slate-700/50 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       />
                       <input
                         type="range"
                         min="0"
                         max="100"
-                        :value="selectedSkillsForRating.get(skill.skill.id)"
+                        class="w-24"
+                        :value="selectedSkillsForEvaluation.get(skill.id)"
                         @input="
                           updateSkillScore(
-                            skill.skill.id,
+                            skill.id,
                             parseInt(($event.target as HTMLInputElement).value)
                           )
                         "
-                        class="w-24"
                       />
                     </div>
                   </div>
@@ -280,7 +273,7 @@ async function handleDeleteRating(ratingId: number): Promise<void> {
               v-if="!(softSkills.length && hardSkills.length)"
               class="text-slate-500 text-xs text-center py-4"
             >
-              No skills available for rating
+              No skills available for evaluation
             </p>
           </div>
         </div>
@@ -300,89 +293,97 @@ async function handleDeleteRating(ratingId: number): Promise<void> {
 
         <div class="flex items-center justify-end gap-3 pt-2">
           <button
-            @click="cancelEdit"
             type="button"
             class="px-4 py-2 text-sm text-slate-400 hover:text-slate-300 transition-colors"
             :disabled="submitting"
+            @click="cancelEdit"
           >
             Cancel
           </button>
           <button
-            @click="handleSubmitRating"
             type="button"
             class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 text-white rounded transition-colors"
-            :disabled="!canSubmitRating || submitting"
+            :disabled="!canSubmitEvaluation || submitting"
+            @click="handleSubmitEvaluation"
           >
-            {{ submitting ? 'Saving...' : editingRatingId ? 'Update Rating' : 'Submit Rating' }}
+            {{
+              submitting
+                ? 'Saving...'
+                : editingEvaluationId
+                  ? 'Update Evaluation'
+                  : 'Submit Evaluation'
+            }}
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Rating History -->
+    <!-- Evaluation History -->
     <div
-      v-if="student.ratings?.length"
+      v-if="student.evaluations?.length"
       class="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6"
     >
       <h3 class="text-sm font-semibold text-slate-300 mb-4">
-        Rating History ({{ student.ratings.length }})
+        Evaluation History ({{ student.evaluations.length }})
       </h3>
 
       <div class="space-y-3">
         <div
-          v-for="rating in student.ratings"
-          :key="rating.id"
+          v-for="evaluation in student.evaluations"
+          :key="evaluation.id"
           class="border border-slate-700/30 rounded p-4 hover:border-slate-600/50 transition-colors"
         >
           <div class="flex items-start justify-between mb-3">
             <div>
               <p class="text-xs text-slate-400 mb-1">
-                {{ formatDate(rating.createdAt.toString()) }}
+                {{ formatDate(evaluation.createdAt.toString()) }}
               </p>
               <div class="flex items-center gap-2">
                 <span
                   class="text-lg font-bold"
-                  :style="{ color: getRatingColor(calculateAverage(rating.skillRatings)) }"
+                  :style="{
+                    color: getEvaluationColor(calculateAverage(evaluation.skillEvaluations))
+                  }"
                 >
-                  {{ calculateAverage(rating.skillRatings) }}
+                  {{ calculateAverage(evaluation.skillEvaluations) }}
                 </span>
                 <span class="text-xs text-slate-500">average</span>
               </div>
             </div>
             <div class="flex items-center gap-2">
               <button
-                @click="startEditRating(rating)"
                 type="button"
                 class="px-3 py-1.5 text-xs text-blue-400 hover:text-blue-300 bg-blue-950/30 hover:bg-blue-950/50 border border-blue-500/30 hover:border-blue-500/50 rounded transition-colors flex items-center gap-1.5"
+                @click="startEditEvaluation(evaluation)"
               >
                 <Pencil :size="14" />
               </button>
               <button
-                @click="handleDeleteRating(rating.id)"
                 type="button"
                 class="px-3 py-1.5 text-xs text-red-400 hover:text-red-300 bg-red-950/30 hover:bg-red-950/50 border border-red-500/30 hover:border-red-500/50 rounded transition-colors flex items-center gap-1.5"
+                @click="handleDeleteEvaluation(evaluation.id)"
               >
                 <Trash2 :size="14" />
               </button>
             </div>
           </div>
 
-          <p v-if="rating.comment" class="text-xs text-slate-300 mb-3 italic">
-            "{{ rating.comment }}"
+          <p v-if="evaluation.comment" class="text-xs text-slate-300 mb-3 italic">
+            "{{ evaluation.comment }}"
           </p>
 
           <div class="flex flex-wrap gap-2">
             <span
-              v-for="sr in rating.skillRatings"
+              v-for="sr in evaluation.skillEvaluations"
               :key="sr.skill.id"
               class="px-2 py-1 text-xs font-medium rounded border"
               :style="{
-                borderColor: getRatingColor(sr.score),
-                color: getRatingColor(sr.score),
-                backgroundColor: getRatingColor(sr.score) + '15'
+                borderColor: getEvaluationColor(sr.score),
+                color: getEvaluationColor(sr.score),
+                backgroundColor: getEvaluationColor(sr.score) + '15'
               }"
             >
-              {{ sr.skill.name }}: {{ sr.score }}
+              {{ sr.skill.name }}: {{ sr.score ?? 'N/A' }}
             </span>
           </div>
         </div>

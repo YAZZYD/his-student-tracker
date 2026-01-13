@@ -10,9 +10,9 @@ import Loading from '@renderer/components/ui/loading/Loading.vue'
 
 import InfoTab from './tabs/Info.vue'
 import ActivitiesTab from './tabs/Activities.vue'
-import { Activity } from '@renderer/types/models'
+import { Activity, EvaluationWithRelations } from '@renderer/types/models'
 import SkillsTab from './tabs/Skills.vue'
-import RatingsTab from './tabs/Ratings.vue'
+import EvaluationsTab from './tabs/Evaluations.vue'
 
 // ─────────────────────────────
 // routing
@@ -23,7 +23,7 @@ const studentCode = route.params.code as string
 // ─────────────────────────────
 // data
 // ─────────────────────────────
-const { student, fetchStudent, softSkills, hardSkills, loading, error } = useStudentData()
+const { student, fetchStudent, loading, error } = useStudentData()
 
 // ─────────────────────────────
 // unsaved changes handling
@@ -53,6 +53,18 @@ onBeforeRouteLeave(() => {
 const onActivitiesUpdated = (activities: Activity[]): void => {
   if (!student.value) return
   student.value.activities = activities
+}
+
+const onSkillsUpdated = (newEvaluation: EvaluationWithRelations): void => {
+  if (!student.value) return
+
+  const existingIndex = student.value.evaluations.findIndex((r) => r.id === newEvaluation.id)
+
+  if (existingIndex !== -1) {
+    student.value.evaluations.splice(existingIndex, 1, newEvaluation)
+  } else {
+    student.value.evaluations = [newEvaluation, ...student.value.evaluations]
+  }
 }
 </script>
 
@@ -145,14 +157,10 @@ const onActivitiesUpdated = (activities: Activity[]): void => {
               :has-unsaved-changes="hasUnsavedChanges"
               @dirty="markDirty"
               @saved="resetDirty"
+              @skill-evaluations-updated="onSkillsUpdated"
             />
 
-            <RatingsTab
-              v-if="activeTab === 'ratings'"
-              :student="student"
-              :soft-skills="softSkills"
-              :hard-skills="hardSkills"
-            />
+            <EvaluationsTab v-if="activeTab === 'evaluations'" :student="student" />
           </div>
         </div>
       </div>

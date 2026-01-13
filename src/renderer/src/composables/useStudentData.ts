@@ -2,7 +2,7 @@ import { ref, computed, Ref, ComputedRef } from 'vue'
 import {
   StudentWithRelations as Student,
   SkillAvg,
-  SkillRatingWithRelations as SkillRating
+  SkillEvaluationWithRelations as SkillEvaluation
 } from '@renderer/types/models'
 
 import { getVertexPosition } from '@renderer/lib/geometry.utils'
@@ -17,7 +17,7 @@ export const useStudentData = (): {
   softSkillsAverage: ComputedRef<number>
   hardSkillsAverage: ComputedRef<number>
   engagementScore: ComputedRef<number>
-  overallRating: ComputedRef<number>
+  overallEvaluation: ComputedRef<number>
   getDataPoints: ComputedRef<{ x: number; y: number }[]>
   fetchStudent: (code: string) => Promise<void>
 } => {
@@ -26,12 +26,14 @@ export const useStudentData = (): {
   const error = ref<string | null>(null)
 
   const averageSkillScores = computed<SkillAvg[]>(() => {
-    if (!student.value?.ratings.length) return []
+    if (!student.value?.evaluations.length) return []
 
-    const skillMap = new Map<number, { skill: SkillRating['skill']; scores: number[] }>()
+    const skillMap = new Map<number, { skill: SkillEvaluation['skill']; scores: number[] }>()
 
-    student.value.ratings.forEach((rating) => {
-      rating.skillRatings.forEach((sr) => {
+    student.value.evaluations.forEach((evaluation) => {
+      evaluation.skillEvaluations.forEach((sr) => {
+        if (sr.score == null) return
+
         if (!skillMap.has(sr.skill.id)) {
           skillMap.set(sr.skill.id, { skill: sr.skill, scores: [] })
         }
@@ -39,17 +41,19 @@ export const useStudentData = (): {
       })
     })
 
-    return Array.from(skillMap.values()).map(({ skill, scores }) => ({
-      skill,
-      average: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
-    }))
+    return Array.from(skillMap.values())
+      .filter(({ scores }) => scores.length > 0)
+      .map(({ skill, scores }) => ({
+        skill,
+        average: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+      }))
   })
 
   const softSkills = computed(() => averageSkillScores.value.filter((s) => s.skill.type === 'SOFT'))
 
   const hardSkills = computed(() => averageSkillScores.value.filter((s) => s.skill.type === 'HARD'))
 
-  const overallRating = computed(() => {
+  const overallEvaluation = computed(() => {
     if (!averageSkillScores.value.length) return 0
     return Math.round(
       averageSkillScores.value.reduce((sum, s) => sum + s.average, 0) /
@@ -117,7 +121,7 @@ export const useStudentData = (): {
     error,
     softSkills,
     hardSkills,
-    overallRating,
+    overallEvaluation,
     age,
     softSkillsAverage,
     hardSkillsAverage,

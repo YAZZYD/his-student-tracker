@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { updateStudentInfoReq, attachActivitiesReq } from '@/schemas/student.schema'
-import { CreateRatingReq, updateRatingReq } from '@/schemas/rating.schema'
+import { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluation.schema'
+import { createSkillReq } from '@/schemas/skill.schema'
 
 const api = {
   authenticate: (username: string, password: string) =>
@@ -16,9 +17,13 @@ const api = {
   indexSkills: () => ipcRenderer.invoke('skill:index'),
   updateStudentSkills: (data: updateStudentInfoReq) =>
     ipcRenderer.invoke('student:update-skills', data),
-  createRating: (payload: CreateRatingReq) => ipcRenderer.invoke('rating:create', payload),
-  updateRating: (payload: updateRatingReq) => ipcRenderer.invoke('rating:update', payload),
-  deleteRating: (ratingId: number) => ipcRenderer.invoke('rating:delete', ratingId)
+  createEvaluation: (payload: CreateEvaluationReq) =>
+    ipcRenderer.invoke('evaluation:create', payload),
+  updateEvaluation: (payload: updateEvaluationReq) =>
+    ipcRenderer.invoke('evaluation:update', payload),
+  deleteEvaluation: (evaluationId: number) => ipcRenderer.invoke('evaluation:delete', evaluationId),
+  createSkill: (payload: createSkillReq) => ipcRenderer.invoke('skill:create', payload),
+  deleteSkill: (skillId: number) => ipcRenderer.invoke('skill:delete', skillId)
 }
 
 if (process.contextIsolated) {

@@ -1,0 +1,123 @@
+// services/evaluation.service.ts
+import { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluation.schema'
+import { prisma } from '../config/prisma'
+import { ResponseSchema as Response } from '@schemas/response.schema'
+
+export async function createEvaluation(payload: CreateEvaluationReq): Promise<Response> {
+  try {
+    const { code, comment, skillEvaluations } = payload
+    const student = await prisma.student.findUniqueOrThrow({
+      where: { code: code },
+      select: { id: true }
+    })
+
+    const evaluation = await prisma.evaluation.create({
+      data: {
+        studentId: student.id,
+        comment: comment,
+        skillEvaluations: {
+          create: skillEvaluations.map((sr) => ({
+            skillId: sr.skillId,
+            score: sr.score
+          }))
+        }
+      },
+      include: {
+        skillEvaluations: {
+          include: { skill: true }
+        }
+      }
+    })
+
+    return {
+      success: true,
+      message: 'Evaluation created successfully',
+      data: evaluation
+    }
+  } catch (err) {
+    console.error(err)
+    return err instanceof Error
+      ? { success: false, message: err.message }
+      : { success: false, message: 'Unexpected Error' }
+  }
+}
+export async function updateEvaluation(payload: updateEvaluationReq): Promise<Response> {
+  const { evaluationId, comment, skillEvaluations } = payload
+
+  try {
+    const existingSkillEvaluations = await prisma.skillEvaluation.findMany({
+      where: { evaluationId },
+      select: { skillId: true }
+    })
+
+    const existingSkillIds = new Set(existingSkillEvaluations.map((sr) => sr.skillId))
+    const incomingSkillIds = new Set(skillEvaluations.map((sr) => sr.skillId))
+
+    const skillIdsToDelete = [...existingSkillIds].filter((id) => !incomingSkillIds.has(id))
+
+    await prisma.$transaction([
+      // Delete skill evaluations that were removed
+      prisma.skillEvaluation.deleteMany({
+        where: {
+          evaluationId,
+          skillId: { in: skillIdsToDelete }
+        }
+      }),
+      // Upsert all incoming skill evaluations
+      ...skillEvaluations.map((sr) =>
+        prisma.skillEvaluation.upsert({
+          where: {
+            evaluationId_skillId: {
+              evaluationId,
+              skillId: sr.skillId
+            }
+          },
+          update: {
+            score: sr.score
+          },
+          create: {
+            evaluationId,
+            skillId: sr.skillId,
+            score: sr.score
+          }
+        })
+      ),
+      // Update the comment
+      prisma.evaluation.update({
+        where: { id: evaluationId },
+        data: { comment }
+      })
+    ])
+
+    const updated = await prisma.evaluation.findUnique({
+      where: { id: evaluationId },
+      include: { skillEvaluations: { include: { skill: true } } }
+    })
+
+    return {
+      success: true,
+      message: 'Evaluation updated successfully',
+      data: updated
+    }
+  } catch (err) {
+    console.error(err)
+    return { success: false, message: 'Failed to update evaluation' }
+  }
+}
+
+export async function deleteEvaluation(evaluationId: number): Promise<Response> {
+  try {
+    // Cascade delete handled by Prisma (skillEvaluations deleted automatically)
+    await prisma.evaluation.delete({
+      where: { id: evaluationId }
+    })
+
+    return {
+      success: true,
+      message: 'Evaluation deleted successfully'
+    }
+  } catch (err) {
+    console.error(err)
+    return { success: false, message: 'Failed to delete evaluation' }
+  }
+}

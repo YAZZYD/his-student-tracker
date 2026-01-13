@@ -3,8 +3,7 @@ import {
   activitySeeder,
   adminSeeder,
   gradeSpecialtySeeder,
-  ratingSeeder,
-  ratingSkillSeeder,
+  evaluationSeeder,
   skillSeeder,
   studentActivitySeeder,
   studentSeeder
@@ -17,8 +16,7 @@ async function main(): Promise<void> {
   await activitySeeder()
   await studentActivitySeeder()
   await skillSeeder()
-  await ratingSeeder()
-  await ratingSkillSeeder()
+  await evaluationSeeder()
 }
 
 main()

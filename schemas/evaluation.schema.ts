@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
-export const CreateRatingSchema = z.object({
+export const CreateEvaluationSchema = z.object({
   code: z.string().min(1, 'Student code is required'),
   comment: z.string().nullable(),
-  skillRatings: z.array(
+  skillEvaluations: z.array(
     z.object({
       skillId: z.number().int().positive(),
       score: z.number().min(0).max(100)
@@ -11,12 +11,12 @@ export const CreateRatingSchema = z.object({
   )
 })
 
-export type CreateRatingReq = z.infer<typeof CreateRatingSchema>
+export type CreateEvaluationReq = z.infer<typeof CreateEvaluationSchema>
 
-export const updateRatingSchema = z.object({
-  ratingId: z.number().int().positive(),
+export const updateEvaluationSchema = z.object({
+  evaluationId: z.number().int().positive(),
   comment: z.string().nullable(),
-  skillRatings: z.array(
+  skillEvaluations: z.array(
     z.object({
       skillId: z.number().int().positive(),
       score: z.number().min(0).max(100)
@@ -24,4 +24,4 @@ export const updateRatingSchema = z.object({
   )
 })
 
-export type updateRatingReq = z.infer<typeof updateRatingSchema>
+export type updateEvaluationReq = z.infer<typeof updateEvaluationSchema>

@@ -5,6 +5,7 @@ import {
 } from '@/schemas/student.schema'
 import { prisma } from '../config/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
+import { Prisma } from '@/prisma/generated/client'
 
 export async function indexStudents(page: number = 1): Promise<Response> {
   const PAGE_SIZE = 10
@@ -65,9 +66,10 @@ export async function showStudent(code: string): Promise<Response> {
           select: { name: true }
         },
         activities: true,
-        ratings: {
+        evaluations: {
+          orderBy: { createdAt: 'desc' },
           include: {
-            skillRatings: {
+            skillEvaluations: {
               include: {
                 skill: true
               }
@@ -143,57 +145,71 @@ export async function updateStudentSkills(data: updateStudentSkillReq): Promise<
       select: { id: true }
     })
 
-    const rating = await prisma.rating.findFirstOrThrow({
+    const evaluation = await prisma.evaluation.findFirstOrThrow({
       where: { studentId: student.id },
       select: { id: true },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
     })
 
-    const existingSkillRatings = await prisma.skillRating.findMany({
-      where: { ratingId: rating.id },
+    const existingSkillEvaluations = await prisma.skillEvaluation.findMany({
+      where: { evaluationId: evaluation.id },
       select: { skillId: true }
     })
 
-    const existingSkillIds = new Set(existingSkillRatings.map((sr) => sr.skillId))
+    const existingSkillIds = new Set(existingSkillEvaluations.map((sr) => sr.skillId))
     const incomingSkillIds = new Set(skillIds)
 
     const skillIdsToDelete = [...existingSkillIds].filter((id) => !incomingSkillIds.has(id))
 
     await prisma.$transaction([
-      prisma.skillRating.deleteMany({
+      prisma.skillEvaluation.deleteMany({
         where: {
-          ratingId: rating.id,
+          evaluationId: evaluation.id,
           skillId: { in: skillIdsToDelete }
         }
       }),
 
       ...skillIds.map((skillId) =>
-        prisma.skillRating.upsert({
+        prisma.skillEvaluation.upsert({
           where: {
-            ratingId_skillId: {
-              ratingId: rating.id,
+            evaluationId_skillId: {
+              evaluationId: evaluation.id,
               skillId
             }
           },
           update: {},
           create: {
-            ratingId: rating.id,
+            evaluationId: evaluation.id,
             skillId,
-            score: 0
+            score: null
           }
         })
       )
     ])
 
-    const updatedSkillRatings = await prisma.skillRating.findMany({
-      where: { ratingId: rating.id },
-      include: { skill: true }
+    const updatedEvaluation: Prisma.EvaluationGetPayload<{
+      include: {
+        skillEvaluations: {
+          include: {
+            skill: true
+          }
+        }
+      }
+    }> = await prisma.evaluation.findUniqueOrThrow({
+      where: { id: evaluation.id },
+      include: {
+        skillEvaluations: {
+          include: {
+            skill: true
+          }
+        }
+      }
     })
 
     return {
       success: true,
       message: 'Student skills updated successfully',
-      data: { skillRatings: updatedSkillRatings }
+      data: { evaluation: updatedEvaluation }
     }
   } catch (err) {
     console.error(err)
