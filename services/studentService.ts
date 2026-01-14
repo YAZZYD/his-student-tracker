@@ -8,11 +8,22 @@ import { prisma } from '../config/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
 import { Prisma } from '@/prisma/generated/client'
 
-export async function indexStudents(page: number = 1): Promise<Response> {
+export async function indexStudents(page: number = 1, query: string = ''): Promise<Response> {
   const PAGE_SIZE = 10
   try {
+    const whereClause: Prisma.StudentWhereInput = query
+      ? {
+          OR: [
+            { code: { contains: query, mode: 'insensitive' } },
+            { name: { contains: query, mode: 'insensitive' } },
+            { email: { contains: query, mode: 'insensitive' } }
+          ]
+        }
+      : {}
+
     const [students, total] = await Promise.all([
       prisma.student.findMany({
+        where: whereClause,
         skip: (page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
         orderBy: { id: 'desc' },
@@ -28,7 +39,7 @@ export async function indexStudents(page: number = 1): Promise<Response> {
           }
         }
       }),
-      prisma.student.count()
+      prisma.student.count({ where: whereClause })
     ])
 
     return {
@@ -46,13 +57,9 @@ export async function indexStudents(page: number = 1): Promise<Response> {
     }
   } catch (err) {
     console.error(err)
-    console.error(err)
-    return err instanceof Error
-      ? { success: false, message: err.message as string }
-      : { success: false, message: 'Unexpected Error' }
+    return { success: false, message: 'Error fetching students' }
   }
 }
-
 export async function showStudent(code: string): Promise<Response> {
   try {
     const student = await prisma.student.findFirstOrThrow({

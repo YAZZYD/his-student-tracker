@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import StudentRow from './components/index/StudentRow.vue'
 import type { ResponseSchema as Response } from '@/schemas/response.schema'
 import type { StudentHeadInfo, StudentCode } from '@renderer/types/models'
 import { router } from '@renderer/router'
-import { UserPlus } from 'lucide-vue-next'
+import { UserPlus, Search, X } from 'lucide-vue-next'
 
 interface Meta {
   currentPage: number
@@ -17,11 +18,12 @@ const students = ref<StudentHeadInfo[]>([])
 const meta = ref<Meta | null>(null)
 const loading = ref(false)
 const page = ref(1)
+const searchQuery = ref('')
 
-const fetchStudents = async (p = 1): Promise<void> => {
+const fetchStudents = async (page = 1, query = ''): Promise<void> => {
   loading.value = true
   try {
-    const res: Response = await window.api.indexStudent(p)
+    const res: Response = await window.api.indexStudent(page, query)
     if (res.success) {
       students.value = res.data.students
       meta.value = res.data.meta
@@ -35,49 +37,96 @@ const fetchStudents = async (p = 1): Promise<void> => {
   }
 }
 
+const debouncedSearch = useDebounceFn((query: string) => {
+  page.value = 1
+  fetchStudents(1, query)
+}, 300)
+
+const handleSearch = (): void => {
+  debouncedSearch(searchQuery.value)
+}
+
+const clearSearch = (): void => {
+  searchQuery.value = ''
+  page.value = 1
+  fetchStudents(1, '')
+}
+
 const showStudent = async (student: StudentCode): Promise<void> => {
   router.replace({ name: 'student-show', params: { code: student.code } })
 }
+
 const editStudent = async (student: StudentCode): Promise<void> => {
   router.replace({ name: 'student-edit', params: { code: student.code } })
 }
+
 const deleteStudent = async (student: StudentCode): Promise<void> => console.log('Delete', student)
 
 const prevPage = (): void => {
   if (page.value > 1) {
     page.value--
-    fetchStudents(page.value)
+    fetchStudents(page.value, searchQuery.value)
   }
 }
 
 const nextPage = (): void => {
   if (meta.value && page.value < meta.value.lastPage) {
     page.value++
-    fetchStudents(page.value)
+    fetchStudents(page.value, searchQuery.value)
   }
 }
+
 const navigateToCreate = (): void => {
   router.push({ name: 'student-create' })
 }
+
 onMounted(() => fetchStudents())
 </script>
 
 <template>
   <div class="p-6 w-full max-w-7xl mx-auto">
     <!-- Header -->
-    <div class="mb-6 flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-semibold text-slate-100">Students</h1>
-        <p v-if="meta" class="text-sm text-slate-400 mt-1">{{ meta.total }} total students</p>
-      </div>
+    <div class="mb-6">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <div>
+          <h1 class="text-3xl font-bold text-white tracking-tight">Students</h1>
+          <p v-if="meta" class="text-sm text-slate-400 mt-1.5">
+            <span class="font-medium text-slate-300">{{ meta.total }}</span>
+            {{ searchQuery ? 'matching' : 'total' }} students
+          </p>
+        </div>
 
-      <button
-        class="flex items-center gap-2 px-4 py-2 text-white text-sm font-medium rounded-lg border border-blue-500/50 hover:border-blue-600/50 shadow-lg shadow-blue-500/20 transition-all duration-200 hover:shadow-blue-600/40"
-        @click="navigateToCreate"
-      >
-        <UserPlus :size="18" :stroke-width="2" />
-        <span>Create Student</span>
-      </button>
+        <!-- Search Bar -->
+        <div class="relative flex-1 max-w-md">
+          <Search
+            :size="18"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+          />
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search students..."
+            class="w-full pl-10 pr-9 py-2 bg-slate-800/60 border border-slate-700/60 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-slate-600 transition-colors"
+            @input="handleSearch"
+          />
+          <button
+            v-if="searchQuery"
+            class="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-slate-500 hover:text-slate-300 transition-colors"
+            title="Clear"
+            @click="clearSearch"
+          >
+            <X :size="16" :stroke-width="2" />
+          </button>
+        </div>
+
+        <button
+          class="flex items-center gap-2 px-4 py-2 text-white text-sm font-medium rounded-lg border border-blue-500/50 hover:border-blue-600/50 shadow-lg shadow-blue-500/20 transition-all duration-200 hover:shadow-blue-600/40"
+          @click="navigateToCreate"
+        >
+          <UserPlus :size="18" :stroke-width="2" />
+          <span>Create Student</span>
+        </button>
+      </div>
     </div>
 
     <!-- Table Container -->
@@ -115,7 +164,7 @@ onMounted(() => fetchStudents())
 
       <!-- Scrollable Body -->
       <div
-        class="max-h-[calc(100vh-320px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent"
+        class="max-h-[calc(100vh-380px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent"
       >
         <table class="w-full">
           <tbody>
@@ -131,7 +180,16 @@ onMounted(() => fetchStudents())
             <tr v-if="!loading && students.length === 0">
               <td colspan="7" class="px-6 py-16 text-center text-slate-400">
                 <div class="flex flex-col items-center gap-2">
-                  <span class="text-lg">No students found</span>
+                  <span class="text-lg">
+                    {{ searchQuery ? 'No students match your search' : 'No students found' }}
+                  </span>
+                  <button
+                    v-if="searchQuery"
+                    class="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                    @click="clearSearch"
+                  >
+                    Clear search
+                  </button>
                 </div>
               </td>
             </tr>

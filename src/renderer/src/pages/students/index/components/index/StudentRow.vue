@@ -5,6 +5,7 @@ import type { StudentHeadInfo, StudentCode } from '@renderer/types/models'
 import { computed } from 'vue'
 
 const props = defineProps<{ student: StudentHeadInfo }>()
+
 const emit = defineEmits<{
   (e: 'show', code: StudentCode): void
   (e: 'edit', student: StudentCode): void
@@ -25,60 +26,54 @@ const gradeLabel = computed(() => {
 </script>
 
 <template>
-  <tr class="group border-b border-slate-700/30 hover:bg-slate-700/30 transition-all duration-150">
-    <td class="px-6 py-4 text-slate-300 font-mono text-sm w-32">
+  <tr class="border-b border-slate-700/50 hover:bg-slate-800/40 transition-colors">
+    <td class="px-4 py-3 text-slate-400 font-mono text-xs">
       {{ props.student.code }}
     </td>
-    <td class="px-6 py-4 text-slate-100 font-medium">
+    <td class="px-4 py-3 text-slate-200 font-medium text-sm">
       {{ props.student.name }}
     </td>
-    <td class="px-6 py-4 text-slate-300 text-sm">
+    <td class="px-4 py-3 text-slate-400 text-sm">
       {{ props.student.email }}
     </td>
-    <td class="px-6 py-4">
-      <span
-        class="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 text-xs font-medium border border-blue-500/20"
-      >
+    <td class="px-4 py-3">
+      <span class="inline-block px-2 py-0.5 rounded bg-slate-700/50 text-slate-300 text-xs">
         {{ props.student.specialty.name }}
       </span>
     </td>
-    <td class="px-6 py-4 w-32">
-      <span
-        class="inline-flex items-center px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20"
-      >
+    <td class="px-4 py-3">
+      <span class="inline-block px-2 py-0.5 rounded bg-slate-700/50 text-slate-300 text-xs">
         {{ gradeLabel }}
       </span>
     </td>
-    <td class="px-6 py-4 w-36">
-      <div
-        class="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-      >
+    <td class="px-4 py-3">
+      <div class="flex gap-1 justify-end">
         <Button
           variant="ghost"
           size="icon"
-          class="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors"
-          title="View Details"
+          class="h-7 w-7 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50"
+          title="View"
           @click="emit('show', props.student)"
         >
-          <Eye class="h-4 w-4" />
+          <Eye class="h-3.5 w-3.5" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          class="h-8 w-8 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
-          title="Edit StudentHeadInfo"
+          class="h-7 w-7 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50"
+          title="Edit"
           @click="emit('edit', props.student)"
         >
-          <Edit class="h-4 w-4" />
+          <Edit class="h-3.5 w-3.5" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          class="h-8 w-8 text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-          title="Delete StudentHeadInfo"
+          class="h-7 w-7 text-slate-500 hover:text-red-400 hover:bg-slate-700/50"
+          title="Delete"
           @click="emit('delete', props.student)"
         >
-          <Trash class="h-4 w-4" />
+          <Trash class="h-3.5 w-3.5" />
         </Button>
       </div>
     </td>

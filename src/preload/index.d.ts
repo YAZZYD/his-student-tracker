@@ -14,7 +14,7 @@ declare global {
     electron: ElectronAPI
     api: {
       authenticate(username: string, password: string): Promise<ResponseSchema>
-      indexStudent(page?: number): Promise<ResponseSchema>
+      indexStudent(page?: number, query?: string): Promise<ResponseSchema>
       showStudent(code: string): Promise<ResponseSchema>
       indexAcademicCatalog(): Promise<ResponseSchema>
       indexActivities(): Promise<ResponseSchema>

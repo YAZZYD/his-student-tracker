@@ -11,7 +11,7 @@ import { createSkillReq } from '@/schemas/skill.schema'
 const api = {
   authenticate: (username: string, password: string) =>
     ipcRenderer.invoke('auth:login', username, password),
-  indexStudent: (page?: number) => ipcRenderer.invoke('student:index', page),
+  indexStudent: (page?: number, query?: string) => ipcRenderer.invoke('student:index', page, query),
   showStudent: (code: string) => ipcRenderer.invoke('student:show', code),
   indexAcademicCatalog: () => ipcRenderer.invoke('index-academic-catalog'),
   indexActivities: () => ipcRenderer.invoke('activity:index'),

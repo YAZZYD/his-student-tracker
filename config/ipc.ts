@@ -28,9 +28,12 @@ export function registerIpcHandler(): void {
     }
   )
 
-  ipcMain.handle('student:index', async (_event, page?: number): Promise<Response> => {
-    return await indexStudents(page)
-  })
+  ipcMain.handle(
+    'student:index',
+    async (_event, page?: number, query?: string): Promise<Response> => {
+      return await indexStudents(page, query)
+    }
+  )
 
   ipcMain.handle('student:show', async (_event, code: string): Promise<Response> => {
     return await showStudent(code)
