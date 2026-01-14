@@ -31,8 +31,9 @@ export async function createEvaluation(payload: CreateEvaluationReq): Promise<Re
 
     return {
       success: true,
+      status: 201,
       message: 'Evaluation created successfully',
-      data: evaluation
+      data: { evaluation }
     }
   } catch (err) {
     console.error(err)
@@ -89,15 +90,16 @@ export async function updateEvaluation(payload: updateEvaluationReq): Promise<Re
       })
     ])
 
-    const updated = await prisma.evaluation.findUnique({
+    const updatedEvaluation = await prisma.evaluation.findUnique({
       where: { id: evaluationId },
       include: { skillEvaluations: { include: { skill: true } } }
     })
 
     return {
       success: true,
+      status: 200,
       message: 'Evaluation updated successfully',
-      data: updated
+      data: { evaluation: updatedEvaluation }
     }
   } catch (err) {
     console.error(err)
@@ -107,13 +109,17 @@ export async function updateEvaluation(payload: updateEvaluationReq): Promise<Re
 
 export async function deleteEvaluation(evaluationId: number): Promise<Response> {
   try {
-    // Cascade delete handled by Prisma (skillEvaluations deleted automatically)
+    const deletedEvaluation = await prisma.evaluation.findUnique({
+      where: { id: evaluationId },
+      include: { skillEvaluations: { include: { skill: true } } }
+    })
     await prisma.evaluation.delete({
       where: { id: evaluationId }
     })
 
     return {
       success: true,
+      data: { evaluation: deletedEvaluation },
       message: 'Evaluation deleted successfully'
     }
   } catch (err) {

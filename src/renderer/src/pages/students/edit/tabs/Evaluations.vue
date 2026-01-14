@@ -6,6 +6,7 @@ import { Check, Plus, Trash2, Pencil, ChevronDown } from 'lucide-vue-next'
 
 import type {
   EvaluationWithRelations as Evaluation,
+  EvaluationWithRelations,
   SkillEvaluation,
   StudentWithRelations
 } from '@renderer/types/models'
@@ -13,12 +14,15 @@ import { formatDate, getEvaluationColor } from '@renderer/lib/format.utils'
 import Error from '@renderer/components/ui/error/Error.vue'
 import Loading from '@renderer/components/ui/loading/Loading.vue'
 import { SkillTypeMap } from '@renderer/constants/skill.constants'
+import { useToast } from '@renderer/composables/useToast'
 
 interface Props {
   student: StudentWithRelations
+  hasUnsavedChanges: boolean
 }
 
 const route = useRoute()
+const toast = useToast()
 
 const {
   loading,
@@ -42,6 +46,31 @@ const showEvaluationForm = ref(false)
 
 //eslint-disable-next-line
 const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'dirty'): void
+  (e: 'saved'): void
+  (
+    e: 'evaluation-updated',
+    evaluation: EvaluationWithRelations,
+    action: 'created' | 'updated' | 'deleted'
+  ): void
+}>()
+function toggleEvaluationForm(): void {
+  if (showEvaluationForm.value) {
+    // Closing the form
+    if (props.hasUnsavedChanges && !confirm('Discard unsaved changes?')) return
+    cancel()
+    showEvaluationForm.value = false
+    emit('saved')
+  } else {
+    // Opening the form
+    if (!editingEvaluationId.value) {
+      cancel() // Ensure clean state for new evaluation
+    }
+    showEvaluationForm.value = true
+    emit('dirty')
+  }
+}
 
 function calculateAverage(skillEvaluations: SkillEvaluation[]): number {
   const validScores = skillEvaluations
@@ -56,10 +85,13 @@ function calculateAverage(skillEvaluations: SkillEvaluation[]): number {
 function startEditEvaluation(evaluation: Evaluation): void {
   startEdit(evaluation)
   showEvaluationForm.value = true
+  emit('dirty')
 }
 
 function cancelEdit(): void {
+  if (props.hasUnsavedChanges && !confirm('Discard unsaved changes?')) return
   cancel()
+  emit('saved')
   showEvaluationForm.value = false
 }
 
@@ -67,16 +99,25 @@ async function handleSubmitEvaluation(): Promise<void> {
   const response = await submitEvaluation()
   if (response?.success) {
     showEvaluationForm.value = false
-    // Refresh student data
-    // await fetchStudent(route.params.code as string)
+    response.status === 200
+      ? emit('evaluation-updated', response.data.evaluation, 'updated')
+      : emit('evaluation-updated', response.data.evaluation, 'created')
+    emit('saved')
+    toast.showToast('changes applied successfully', 'success')
+    return
   }
+  toast.showToast(response?.message || 'Error', 'error')
 }
 
 async function handleDeleteEvaluation(evaluationId: number): Promise<void> {
   const response = await deleteEvaluation(evaluationId)
   if (response?.success) {
-    // await fetchStudent(route.params.code as string)
+    emit('evaluation-updated', response.data.evaluation, 'deleted')
+    emit('saved')
+    toast.showToast('changes applied successfully', 'success')
+    return
   }
+  toast.showToast(response?.message || 'Error', 'error')
 }
 onMounted(async () => {
   await fetchSkills()
@@ -94,7 +135,7 @@ onMounted(async () => {
       <button
         type="button"
         class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-800/50 transition-colors"
-        @click="showEvaluationForm = !showEvaluationForm"
+        @click="toggleEvaluationForm"
       >
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
@@ -293,6 +334,7 @@ onMounted(async () => {
 
         <div class="flex items-center justify-end gap-3 pt-2">
           <button
+            v-if="hasUnsavedChanges"
             type="button"
             class="px-4 py-2 text-sm text-slate-400 hover:text-slate-300 transition-colors"
             :disabled="submitting"
@@ -303,7 +345,7 @@ onMounted(async () => {
           <button
             type="button"
             class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 text-white rounded transition-colors"
-            :disabled="!canSubmitEvaluation || submitting"
+            :disabled="!canSubmitEvaluation || submitting || !hasUnsavedChanges"
             @click="handleSubmitEvaluation"
           >
             {{
@@ -353,17 +395,17 @@ onMounted(async () => {
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                class="px-3 py-1.5 text-xs text-blue-400 hover:text-blue-300 bg-blue-950/30 hover:bg-blue-950/50 border border-blue-500/30 hover:border-blue-500/50 rounded transition-colors flex items-center gap-1.5"
+                class="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded transition-colors"
                 @click="startEditEvaluation(evaluation)"
               >
-                <Pencil :size="14" />
+                <Pencil :size="16" />
               </button>
               <button
                 type="button"
-                class="px-3 py-1.5 text-xs text-red-400 hover:text-red-300 bg-red-950/30 hover:bg-red-950/50 border border-red-500/30 hover:border-red-500/50 rounded transition-colors flex items-center gap-1.5"
+                class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
                 @click="handleDeleteEvaluation(evaluation.id)"
               >
-                <Trash2 :size="14" />
+                <Trash2 :size="16" />
               </button>
             </div>
           </div>

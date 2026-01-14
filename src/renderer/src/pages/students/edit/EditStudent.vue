@@ -66,6 +66,30 @@ const onSkillsUpdated = (newEvaluation: EvaluationWithRelations): void => {
     student.value.evaluations = [newEvaluation, ...student.value.evaluations]
   }
 }
+const onEvaluationUpdated = (
+  evaluation: EvaluationWithRelations,
+  action: 'created' | 'updated' | 'deleted'
+): void => {
+  if (!student.value) return
+
+  const index = student.value.evaluations.findIndex((ev) => ev.id === evaluation.id)
+
+  switch (action) {
+    case 'created':
+      student.value.evaluations.push(evaluation)
+      break
+    case 'updated':
+      if (index !== -1) {
+        student.value.evaluations[index] = evaluation
+      }
+      break
+    case 'deleted':
+      if (index !== -1) {
+        student.value.evaluations.splice(index, 1)
+      }
+      break
+  }
+}
 </script>
 
 <template>
@@ -160,7 +184,14 @@ const onSkillsUpdated = (newEvaluation: EvaluationWithRelations): void => {
               @skill-evaluations-updated="onSkillsUpdated"
             />
 
-            <EvaluationsTab v-if="activeTab === 'evaluations'" :student="student" />
+            <EvaluationsTab
+              v-if="activeTab === 'evaluations'"
+              :student="student"
+              :has-unsaved-changes="hasUnsavedChanges"
+              @dirty="markDirty"
+              @saved="resetDirty"
+              @evaluation-updated="onEvaluationUpdated"
+            />
           </div>
         </div>
       </div>

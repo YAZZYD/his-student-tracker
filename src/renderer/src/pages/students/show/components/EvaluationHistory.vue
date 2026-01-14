@@ -54,7 +54,7 @@ const props = defineProps<Props>()
               backgroundColor: getEvaluationColor(sr.score) + '15'
             }"
           >
-            {{ sr.skill.name }}: {{ sr.score }}
+            {{ sr.skill.name }}: {{ sr.score ?? 'N/A' }}
           </span>
         </div>
       </div>

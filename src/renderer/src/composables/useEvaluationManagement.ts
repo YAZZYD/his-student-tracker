@@ -75,9 +75,6 @@ export function useEvaluationManagement(code: string): {
         skillEvaluations
       }
 
-      alert(editingEvaluationId.value ? 'Updating Evaluation' : 'Creating Evaluation')
-      alert(JSON.stringify(payload))
-      return
       const response = editingEvaluationId.value
         ? await window.api.updateEvaluation({ evaluationId: editingEvaluationId.value, ...payload })
         : await window.api.createEvaluation(payload)
