@@ -1,7 +1,8 @@
 import {
   attachActivitiesReq,
   updateStudentSkillReq,
-  updateStudentInfoReq
+  updateStudentInfoReq,
+  createStudentInfoReq
 } from '@/schemas/student.schema'
 import { prisma } from '../config/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
@@ -91,6 +92,22 @@ export async function showStudent(code: string): Promise<Response> {
   }
 }
 
+export async function createStudent(data: createStudentInfoReq): Promise<Response> {
+  try {
+    await prisma.student.create({
+      data: data
+    })
+    return {
+      success: true,
+      message: 'Student created Successfully'
+    }
+  } catch (err) {
+    console.error(err)
+    return err instanceof Error
+      ? { success: false, message: err.message as string }
+      : { success: false, message: 'Unexpected Error' }
+  }
+}
 export async function updateStudent(data: updateStudentInfoReq): Promise<Response> {
   try {
     await prisma.student.update({

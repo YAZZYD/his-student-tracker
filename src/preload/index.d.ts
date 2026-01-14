@@ -4,7 +4,8 @@ import type { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluat
 import type {
   updateStudentInfoReq,
   attachActivitiesReq,
-  updateStudentSkillReq
+  updateStudentSkillReq,
+  createStudentInfoReq
 } from '@/schemas/student.schema'
 import { createSkillReq } from '@/schemas/skill.schema'
 
@@ -17,6 +18,7 @@ declare global {
       showStudent(code: string): Promise<ResponseSchema>
       indexAcademicCatalog(): Promise<ResponseSchema>
       indexActivities(): Promise<ResponseSchema>
+      createStudent(data: createStudentInfoReq): Promise<ResponseSchema>
       updateStudent(data: updateStudentInfoReq): Promise<ResponseSchema>
       updateStudentActivities(data: attachActivitiesReq): Promise<ResponseSchema>
       indexSkills(): Promise<ResponseSchema>

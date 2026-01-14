@@ -2,6 +2,7 @@ import { ipcMain } from 'electron'
 import { authenticate } from '../services/authService'
 import { ResponseSchema as Response, ResponseSchema } from '../schemas/response.schema'
 import {
+  createStudent,
   indexStudents,
   showStudent,
   updateAttachedActivities,
@@ -12,12 +13,13 @@ import { indexSpecialtiesWithGrades } from '../services/academicCatalogService'
 import type {
   updateStudentInfoReq,
   attachActivitiesReq,
-  updateStudentSkillReq
+  updateStudentSkillReq,
+  createStudentInfoReq
 } from '../schemas/student.schema'
 import { indexActivities } from '../services/activityService'
 import { createSkill, deleteSkill, indexSkills } from '../services/skillService'
 import { createEvaluation, deleteEvaluation, updateEvaluation } from '../services/evaluationService'
-import { createSkillReq } from '@/schemas/skill.schema'
+import { createSkillReq } from '../schemas/skill.schema'
 export function registerIpcHandler(): void {
   ipcMain.handle(
     'auth:login',
@@ -45,6 +47,12 @@ export function registerIpcHandler(): void {
     }
   )
 
+  ipcMain.handle(
+    'student:create',
+    async (_event, data: createStudentInfoReq): Promise<ResponseSchema> => {
+      return await createStudent(data)
+    }
+  )
   ipcMain.handle('activity:index', async (): Promise<Response> => await indexActivities())
   ipcMain.handle(
     'student:update-activities',

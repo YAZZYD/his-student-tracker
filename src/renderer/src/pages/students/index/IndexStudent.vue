@@ -4,6 +4,7 @@ import StudentRow from './components/index/StudentRow.vue'
 import type { ResponseSchema as Response } from '@/schemas/response.schema'
 import type { StudentHeadInfo, StudentCode } from '@renderer/types/models'
 import { router } from '@renderer/router'
+import { UserPlus } from 'lucide-vue-next'
 
 interface Meta {
   currentPage: number
@@ -55,7 +56,9 @@ const nextPage = (): void => {
     fetchStudents(page.value)
   }
 }
-
+const navigateToCreate = (): void => {
+  router.push({ name: 'student-create' })
+}
 onMounted(() => fetchStudents())
 </script>
 
@@ -67,6 +70,14 @@ onMounted(() => fetchStudents())
         <h1 class="text-3xl font-semibold text-slate-100">Students</h1>
         <p v-if="meta" class="text-sm text-slate-400 mt-1">{{ meta.total }} total students</p>
       </div>
+
+      <button
+        class="flex items-center gap-2 px-4 py-2 text-white text-sm font-medium rounded-lg border border-blue-500/50 hover:border-blue-600/50 shadow-lg shadow-blue-500/20 transition-all duration-200 hover:shadow-blue-600/40"
+        @click="navigateToCreate"
+      >
+        <UserPlus :size="18" :stroke-width="2" />
+        <span>Create Student</span>
+      </button>
     </div>
 
     <!-- Table Container -->

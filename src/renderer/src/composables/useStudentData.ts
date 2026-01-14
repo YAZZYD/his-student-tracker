@@ -20,6 +20,7 @@ export const useStudentData = (): {
   overallEvaluation: ComputedRef<number>
   getDataPoints: ComputedRef<{ x: number; y: number }[]>
   fetchStudent: (code: string) => Promise<void>
+  initStudent: () => void
 } => {
   const student = ref<Student | null>(null)
   const loading = ref(true)
@@ -92,6 +93,34 @@ export const useStudentData = (): {
     const activityCount = student.value.activities.length
     return Math.min(100, Math.round((activityCount / 10) * 100))
   })
+
+  const initStudent = (): void => {
+    const emptyStudent: Student = {
+      id: 0,
+      code: '',
+      name: '',
+      email: '',
+      phone: '',
+      birth_date: new Date(),
+      birth_place: '',
+      enrollment_year: new Date(),
+      address: '',
+
+      gradeId: 0,
+      specialtyId: 0,
+      grade: { id: 0, name: '' },
+      specialty: { id: 0, name: '' },
+
+      activities: [],
+      evaluations: [],
+
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    student.value = emptyStudent
+    loading.value = false
+  }
+
   const fetchStudent = async (code: string): Promise<void> => {
     try {
       loading.value = true
@@ -127,6 +156,7 @@ export const useStudentData = (): {
     hardSkillsAverage,
     engagementScore,
     getDataPoints,
-    fetchStudent
+    fetchStudent,
+    initStudent
   }
 }

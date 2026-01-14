@@ -8,11 +8,11 @@ import { useStudentTabs } from '@renderer/composables/useStudentTabs'
 import Error from '@renderer/components/ui/error/Error.vue'
 import Loading from '@renderer/components/ui/loading/Loading.vue'
 
-import InfoTab from './tabs/Info.vue'
-import ActivitiesTab from './tabs/Activities.vue'
+import InfoTab from '../tabs/Info.vue'
+import ActivitiesTab from '../tabs/Activities.vue'
 import { Activity, EvaluationWithRelations } from '@renderer/types/models'
-import SkillsTab from './tabs/Skills.vue'
-import EvaluationsTab from './tabs/Evaluations.vue'
+import SkillsTab from '../tabs/Skills.vue'
+import EvaluationsTab from '../tabs/Evaluations.vue'
 
 // ─────────────────────────────
 // routing

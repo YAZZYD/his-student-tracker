@@ -59,6 +59,8 @@ model Student {
   code            String       @unique
   name            String       @unique
   email           String       @unique
+  phone           String       @unique
+  address         String
   birth_date      DateTime
   birth_place     String
   enrollment_year DateTime

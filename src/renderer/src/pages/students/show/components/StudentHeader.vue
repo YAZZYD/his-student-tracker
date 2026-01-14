@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { MapPin, Mail, Phone, Calendar, GraduationCap, Briefcase } from 'lucide-vue-next'
 import type { StudentWithRelations } from '@renderer/types/models'
 
 interface Props {
@@ -6,38 +7,77 @@ interface Props {
   age: number
 }
 
-//eslint-disable-next-line
 const props = defineProps<Props>()
+
+const infoSections = [
+  {
+    icon: Mail,
+    label: 'Email',
+    value: props.student.email
+  },
+  {
+    icon: Phone,
+    label: 'Phone',
+    value: props.student.phone
+  },
+  {
+    icon: Calendar,
+    label: 'Age',
+    value: `${props.age} years`
+  },
+  {
+    icon: GraduationCap,
+    label: 'Grade',
+    value: props.student.grade.name
+  },
+  {
+    icon: Briefcase,
+    label: 'Specialty',
+    value: props.student.specialty.name
+  },
+  {
+    icon: MapPin,
+    label: 'Location',
+    value: props.student.address
+  }
+]
 </script>
 
 <template>
-  <!-- Profile Section -->
-  <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg p-6">
-    <div class="flex items-start gap-6">
-      <div
-        class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl font-bold text-white flex-shrink-0"
-      >
-        {{ student.name.charAt(0) }}
+  <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg overflow-hidden">
+    <!-- Header with Avatar -->
+    <div
+      class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 p-6 border-b border-slate-700/50"
+    >
+      <div class="flex items-center gap-4">
+        <div
+          class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white flex-shrink-0 ring-4 ring-slate-800/50"
+        >
+          {{ student.name.charAt(0) }}
+        </div>
+        <div>
+          <h1 class="text-2xl font-semibold text-white mb-1">{{ student.name }}</h1>
+          <p class="text-slate-300 text-sm font-mono">{{ student.code }}</p>
+        </div>
       </div>
-      <div class="flex-1">
-        <h1 class="text-xl font-semibold text-white mb-1">{{ student.name }}</h1>
-        <p class="text-slate-400 text-xs mb-4 font-mono">{{ student.code }}</p>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3 text-xs">
-          <div>
-            <p class="text-slate-500">Email</p>
-            <p class="text-slate-300">{{ student.email }}</p>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          v-for="(item, index) in infoSections"
+          :key="index"
+          class="flex items-start gap-3 p-4 rounded-lg bg-slate-900/30 border border-slate-700/30 hover:border-slate-600/50 transition-colors"
+        >
+          <div
+            class="w-10 h-10 rounded-lg bg-slate-800/50 flex items-center justify-center shrink-0"
+          >
+            <component :is="item.icon" class="w-5 h-5 text-slate-400" :stroke-width="2" />
           </div>
-          <div>
-            <p class="text-slate-500">Age</p>
-            <p class="text-slate-300">{{ age }} years</p>
-          </div>
-          <div>
-            <p class="text-slate-500">Grade</p>
-            <p class="text-slate-300">{{ student.grade.name }}</p>
-          </div>
-          <div>
-            <p class="text-slate-500">Specialty</p>
-            <p class="text-slate-300">{{ student.specialty.name }}</p>
+          <div class="min-w-0 flex-1">
+            <p class="text-xs text-slate-500 mb-1">{{ item.label }}</p>
+            <p class="text-sm text-slate-200 break-words">{{ item.value }}</p>
           </div>
         </div>
       </div>

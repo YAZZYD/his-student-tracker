@@ -1,6 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { updateStudentInfoReq, attachActivitiesReq } from '@/schemas/student.schema'
+import {
+  updateStudentInfoReq,
+  attachActivitiesReq,
+  createStudentInfoReq
+} from '@/schemas/student.schema'
 import { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluation.schema'
 import { createSkillReq } from '@/schemas/skill.schema'
 
@@ -12,6 +16,7 @@ const api = {
   indexAcademicCatalog: () => ipcRenderer.invoke('index-academic-catalog'),
   indexActivities: () => ipcRenderer.invoke('activity:index'),
   updateStudent: (data: updateStudentInfoReq) => ipcRenderer.invoke('student:update', data),
+  createStudent: (data: createStudentInfoReq) => ipcRenderer.invoke('student:create', data),
   updateStudentActivities: (data: attachActivitiesReq) =>
     ipcRenderer.invoke('student:update-activities', data),
   indexSkills: () => ipcRenderer.invoke('skill:index'),
