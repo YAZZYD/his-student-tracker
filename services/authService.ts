@@ -13,6 +13,6 @@ export async function authenticate(username: string, password: string): Promise<
     return { success: true, message: 'Login successful' }
   } catch (err) {
     console.error('Authentication error:', err)
-    return { success: false, message: 'An unexpected error occurred' }
+    throw err instanceof Error ? err : 'Unexpected Error'
   }
 }

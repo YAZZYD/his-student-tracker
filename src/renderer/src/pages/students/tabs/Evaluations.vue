@@ -96,17 +96,19 @@ function cancelEdit(): void {
 }
 
 async function handleSubmitEvaluation(): Promise<void> {
-  const response = await submitEvaluation()
-  if (response?.success) {
-    showEvaluationForm.value = false
-    response.status === 200
-      ? emit('evaluation-updated', response.data.evaluation, 'updated')
-      : emit('evaluation-updated', response.data.evaluation, 'created')
-    emit('saved')
-    toast.showToast('changes applied successfully', 'success')
-    return
+  try {
+    const response = await submitEvaluation()
+    if (response?.success) {
+      showEvaluationForm.value = false
+      response.status === 200
+        ? emit('evaluation-updated', response.data.evaluation, 'updated')
+        : emit('evaluation-updated', response.data.evaluation, 'created')
+      emit('saved')
+      toast.showToast('changes applied successfully', 'success')
+    }
+  } catch (err: any) {
+    toast.showToast(err?.message || 'Error', 'error')
   }
-  toast.showToast(response?.message || 'Error', 'error')
 }
 
 async function handleDeleteEvaluation(evaluationId: number): Promise<void> {

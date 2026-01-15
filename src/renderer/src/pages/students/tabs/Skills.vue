@@ -143,8 +143,6 @@ const saveSkills = async (): Promise<void> => {
       emit('saved')
       emit('skill-updated', res.data.skillEvaluations)
       toast.showToast('Skills updated', 'success')
-    } else {
-      toast.showToast(res.message || 'Error updating skills', 'error')
     }
   } catch (err: any) {
     console.error(err)
@@ -162,20 +160,18 @@ const handleCancel = (): void => {
 const createSkill = handleSubmit(async (values) => {
   submitting.value = true
   try {
-    const payload = {
+    const data = {
       name: values.name,
       description: values.description,
       type: values.type
     }
-    const res = await window.api.createSkill(payload)
+    const res = await window.api.createSkill(data)
     if (res.success) {
       resetForm()
       allSkills.value.push(res.data.skill)
       showCreateSkillModal.value = false
       searchQuery.value = ''
       toast.showToast('Skill created', 'success')
-    } else {
-      toast.showToast(res.message || 'Error creating skill', 'error')
     }
   } catch (err: any) {
     console.error(err)

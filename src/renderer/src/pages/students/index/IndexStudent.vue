@@ -27,8 +27,6 @@ const fetchStudents = async (page = 1, query = ''): Promise<void> => {
     if (res.success) {
       students.value = res.data.students
       meta.value = res.data.meta
-    } else {
-      console.error(res.message)
     }
   } catch (err) {
     console.error(err)

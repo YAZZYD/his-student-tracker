@@ -7,6 +7,7 @@ import {
 } from '@/schemas/student.schema'
 import { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluation.schema'
 import { createSkillReq } from '@/schemas/skill.schema'
+import { createActivityReq, updateActivityReq } from '@/schemas/activity.schema'
 
 const api = {
   authenticate: (username: string, password: string) =>
@@ -14,7 +15,6 @@ const api = {
   indexStudent: (page?: number, query?: string) => ipcRenderer.invoke('student:index', page, query),
   showStudent: (code: string) => ipcRenderer.invoke('student:show', code),
   indexAcademicCatalog: () => ipcRenderer.invoke('index-academic-catalog'),
-  indexActivities: () => ipcRenderer.invoke('activity:index'),
   updateStudent: (data: updateStudentInfoReq) => ipcRenderer.invoke('student:update', data),
   createStudent: (data: createStudentInfoReq) => ipcRenderer.invoke('student:create', data),
   updateStudentActivities: (data: attachActivitiesReq) =>
@@ -22,13 +22,16 @@ const api = {
   indexSkills: () => ipcRenderer.invoke('skill:index'),
   updateStudentSkills: (data: updateStudentInfoReq) =>
     ipcRenderer.invoke('student:update-skills', data),
-  createEvaluation: (payload: CreateEvaluationReq) =>
-    ipcRenderer.invoke('evaluation:create', payload),
-  updateEvaluation: (payload: updateEvaluationReq) =>
-    ipcRenderer.invoke('evaluation:update', payload),
+  createEvaluation: (data: CreateEvaluationReq) => ipcRenderer.invoke('evaluation:create', data),
+  updateEvaluation: (data: updateEvaluationReq) => ipcRenderer.invoke('evaluation:update', data),
   deleteEvaluation: (evaluationId: number) => ipcRenderer.invoke('evaluation:delete', evaluationId),
-  createSkill: (payload: createSkillReq) => ipcRenderer.invoke('skill:create', payload),
-  deleteSkill: (skillId: number) => ipcRenderer.invoke('skill:delete', skillId)
+  createSkill: (data: createSkillReq) => ipcRenderer.invoke('skill:create', data),
+  deleteSkill: (skillId: number) => ipcRenderer.invoke('skill:delete', skillId),
+  indexActivities: (page?: number, paginate?: boolean) =>
+    ipcRenderer.invoke('activity:index', page, paginate),
+  createActivity: (data: createActivityReq) => ipcRenderer.invoke('activity:crate', data),
+  updateActivity: (data: updateActivityReq) => ipcRenderer.invoke('activity:crate', data),
+  deleteActivity: (activityId: number) => ipcRenderer.invoke('activity:crate', activityId)
 }
 
 if (process.contextIsolated) {

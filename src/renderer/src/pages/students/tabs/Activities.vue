@@ -87,12 +87,10 @@ const saveActivities = async (): Promise<void> => {
       emit('saved')
       emit('activities-updated', response.data.activities)
       toast.showToast('Activities updated successfully', 'success')
-    } else {
-      toast.showToast(response.message || 'Error updating activities', 'error')
     }
   } catch (error: any) {
     console.error('Error saving activities:', error)
-    toast.showToast(error.message || 'Error updating activities', 'error')
+    toast.showToast(error?.message || 'Error updating activities', 'error')
   } finally {
     submitting.value = false
   }

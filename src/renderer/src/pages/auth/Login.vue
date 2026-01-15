@@ -16,9 +16,10 @@ import {
 import { router } from '@renderer/router'
 import { useAuth } from '@renderer/stores/auth'
 import { Lock, User as UserIcon } from 'lucide-vue-next'
+import { useToast } from '@renderer/composables/useToast'
 
 const auth = useAuth()
-
+const toast = useToast()
 const { handleSubmit, errors, defineField, setFieldError } = useForm({
   validationSchema: toTypedSchema(LoginSchema)
 })
@@ -27,14 +28,17 @@ const [username, usernameAttrs] = defineField('username')
 const [password, passwordAttrs] = defineField('password')
 
 const onSubmit = handleSubmit(async (values) => {
-  const res: Response = await window.api.authenticate(values.username, values.password)
-  if (!res.success) {
-    setFieldError('username', 'Invalid username or password')
-    setFieldError('password', 'Invalid username or password')
-    return
+  try {
+    const res: Response = await window.api.authenticate(values.username, values.password)
+    if (!res.success) {
+      setFieldError('username', 'Invalid username or password')
+      return
+    }
+    auth.login(values.username)
+    router.push({ name: 'student-index' })
+  } catch (err: any) {
+    toast.showToast(err?.message || 'Error')
   }
-  auth.login(values.username)
-  router.push({ name: 'student-index' })
 })
 </script>
 

@@ -3,9 +3,9 @@ import { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluation.s
 import { prisma } from '../config/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
 
-export async function createEvaluation(payload: CreateEvaluationReq): Promise<Response> {
+export async function createEvaluation(data: CreateEvaluationReq): Promise<Response> {
   try {
-    const { code, comment, skillEvaluations } = payload
+    const { code, comment, skillEvaluations } = data
     const student = await prisma.student.findUniqueOrThrow({
       where: { code: code },
       select: { id: true }
@@ -37,13 +37,11 @@ export async function createEvaluation(payload: CreateEvaluationReq): Promise<Re
     }
   } catch (err) {
     console.error(err)
-    return err instanceof Error
-      ? { success: false, message: err.message }
-      : { success: false, message: 'Unexpected Error' }
+    throw err instanceof Error ? err : new Error('Unexpected error')
   }
 }
-export async function updateEvaluation(payload: updateEvaluationReq): Promise<Response> {
-  const { evaluationId, comment, skillEvaluations } = payload
+export async function updateEvaluation(data: updateEvaluationReq): Promise<Response> {
+  const { evaluationId, comment, skillEvaluations } = data
 
   try {
     const existingSkillEvaluations = await prisma.skillEvaluation.findMany({

@@ -1,5 +1,5 @@
 import type { ElectronAPI } from '@electron-toolkit/preload'
-import type { ResponseSchema } from '@/schemas/response.schema'
+import type { ResponseSchema as Response } from '@/schemas/response.schema'
 import type { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluationtion.schema'
 import type {
   updateStudentInfoReq,
@@ -8,26 +8,30 @@ import type {
   createStudentInfoReq
 } from '@/schemas/student.schema'
 import { createSkillReq } from '@/schemas/skill.schema'
+import { createActivityReq } from '@/schemas/activity.schema'
 
 declare global {
   interface Window {
     electron: ElectronAPI
     api: {
-      authenticate(username: string, password: string): Promise<ResponseSchema>
-      indexStudent(page?: number, query?: string): Promise<ResponseSchema>
-      showStudent(code: string): Promise<ResponseSchema>
-      indexAcademicCatalog(): Promise<ResponseSchema>
-      indexActivities(): Promise<ResponseSchema>
-      createStudent(data: createStudentInfoReq): Promise<ResponseSchema>
-      updateStudent(data: updateStudentInfoReq): Promise<ResponseSchema>
-      updateStudentActivities(data: attachActivitiesReq): Promise<ResponseSchema>
-      indexSkills(): Promise<ResponseSchema>
-      updateStudentSkills(data: updateStudentSkillReq): Promise<ResponseSchema>
-      createEvaluation(payload: CreateEvaluationReq): Promise<ResponseSchema>
-      updateEvaluation(payload: updateEvaluationReq): Promise<ResponseSchema>
-      deleteEvaluation(evaluationId: number): Promise<ResponseSchema>
-      createSkill(payload: createSkillReq): Promise<ResponseSchema>
-      deleteSkill(skillId: number): Promise<ResponseSchema>
+      authenticate(username: string, password: string): Promise<Response>
+      indexStudent(page?: number, query?: string): Promise<Response>
+      showStudent(code: string): Promise<Response>
+      indexAcademicCatalog(): Promise<Response>
+      createStudent(data: createStudentInfoReq): Promise<Response>
+      updateStudent(data: updateStudentInfoReq): Promise<Response>
+      updateStudentActivities(data: attachActivitiesReq): Promise<Response>
+      indexSkills(): Promise<Response>
+      updateStudentSkills(data: updateStudentSkillReq): Promise<Response>
+      createEvaluation(data: CreateEvaluationReq): Promise<Response>
+      updateEvaluation(data: updateEvaluationReq): Promise<Response>
+      deleteEvaluation(evaluationId: number): Promise<Response>
+      createSkill(data: createSkillReq): Promise<Response>
+      deleteSkill(skillId: number): Promise<Response>
+      indexActivities(page?: number, paginate?: boolean): Promise<Response>
+      createActivity(data: createActivityReq): Promise<Response>
+      updateActivity(data: createActivityReq): Promise<Response>
+      deleteActivity(activityId: number): Promise<Response>
     }
   }
 }

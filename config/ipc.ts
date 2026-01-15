@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import { authenticate } from '../services/authService'
-import { ResponseSchema as Response, ResponseSchema } from '../schemas/response.schema'
+import { ResponseSchema as Response } from '../schemas/response.schema'
 import {
   createStudent,
   indexStudents,
@@ -9,17 +9,24 @@ import {
   updateStudent,
   updateStudentSkills
 } from '../services/studentService'
-import { indexSpecialtiesWithGrades } from '../services/academicCatalogService'
 import type {
   updateStudentInfoReq,
   attachActivitiesReq,
   updateStudentSkillReq,
   createStudentInfoReq
 } from '../schemas/student.schema'
-import { indexActivities } from '../services/activityService'
+import type { createSkillReq } from '../schemas/skill.schema'
+import type { createActivityReq, updateActivityReq } from '../schemas/activity.schema'
+import {
+  createActivity,
+  deleteActivity,
+  indexActivities,
+  updateActivity
+} from '../services/activityService'
 import { createSkill, deleteSkill, indexSkills } from '../services/skillService'
 import { createEvaluation, deleteEvaluation, updateEvaluation } from '../services/evaluationService'
-import { createSkillReq } from '../schemas/skill.schema'
+import { indexSpecialtiesWithGrades } from '../services/academicCatalogService'
+
 export function registerIpcHandler(): void {
   ipcMain.handle(
     'auth:login',
@@ -45,18 +52,22 @@ export function registerIpcHandler(): void {
 
   ipcMain.handle(
     'student:update',
-    async (_event, data: updateStudentInfoReq): Promise<ResponseSchema> => {
+    async (_event, data: updateStudentInfoReq): Promise<Response> => {
       return await updateStudent(data)
     }
   )
 
   ipcMain.handle(
     'student:create',
-    async (_event, data: createStudentInfoReq): Promise<ResponseSchema> => {
+    async (_event, data: createStudentInfoReq): Promise<Response> => {
       return await createStudent(data)
     }
   )
-  ipcMain.handle('activity:index', async (): Promise<Response> => await indexActivities())
+  ipcMain.handle(
+    'activity:index',
+    async (_event, page?: number, paginate?: boolean): Promise<Response> =>
+      await indexActivities(page, paginate)
+  )
   ipcMain.handle(
     'student:update-activities',
     async (_event, data: attachActivitiesReq): Promise<Response> =>
@@ -73,11 +84,11 @@ export function registerIpcHandler(): void {
 
   ipcMain.handle(
     'evaluation:create',
-    async (_event, payload): Promise<Response> => await createEvaluation(payload)
+    async (_event, data): Promise<Response> => await createEvaluation(data)
   )
   ipcMain.handle(
     'evaluation:update',
-    async (_event, payload): Promise<Response> => await updateEvaluation(payload)
+    async (_event, data): Promise<Response> => await updateEvaluation(data)
   )
 
   ipcMain.handle(
@@ -87,10 +98,22 @@ export function registerIpcHandler(): void {
 
   ipcMain.handle(
     'skill:create',
-    async (_event, payload: createSkillReq): Promise<Response> => await createSkill(payload)
+    async (_event, data: createSkillReq): Promise<Response> => await createSkill(data)
   )
   ipcMain.handle(
     'skill:delete',
     async (_event, skillId: number): Promise<Response> => await deleteSkill(skillId)
+  )
+  ipcMain.handle(
+    'activity:create',
+    async (_event, data: createActivityReq): Promise<Response> => await createActivity(data)
+  )
+  ipcMain.handle(
+    'activity:update',
+    async (_event, data: updateActivityReq): Promise<Response> => await updateActivity(data)
+  )
+  ipcMain.handle(
+    'activity:delete',
+    async (_event, activityId: number): Promise<Response> => await deleteActivity(activityId)
   )
 }

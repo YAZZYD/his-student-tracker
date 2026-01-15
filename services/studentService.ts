@@ -237,8 +237,6 @@ export async function updateStudentSkills(data: updateStudentSkillReq): Promise<
     }
   } catch (err) {
     console.error(err)
-    return err instanceof Error
-      ? { success: false, message: err.message }
-      : { success: false, message: 'Unexpected Error' }
+    throw err instanceof Error ? err : new Error('Unexpected error')
   }
 }

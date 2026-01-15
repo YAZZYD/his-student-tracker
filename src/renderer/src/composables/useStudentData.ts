@@ -125,13 +125,8 @@ export const useStudentData = (): {
     try {
       loading.value = true
       const response = await window.api.showStudent(code)
-
-      if (response.success) {
-        student.value = response.data
-      } else {
-        error.value = response.message
-      }
-    } catch (err) {
+      if (response.success) student.value = response.data
+    } catch (err: any) {
       error.value = 'Failed to load student data'
       console.error(err)
     } finally {

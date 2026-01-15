@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+export const skillTypeEnum = z.enum(['SOFT', 'HARD'])
 export const createSkillSchema = z.object({
   name: z
     .string()
@@ -9,7 +10,7 @@ export const createSkillSchema = z.object({
     .string()
     .min(5, 'Description must be at least 5 characters')
     .max(255, 'Description must be at most 255 characters'),
-  type: z.enum(['SOFT', 'HARD'])
+  type: skillTypeEnum
 })
 
 export type createSkillReq = z.infer<typeof createSkillSchema>

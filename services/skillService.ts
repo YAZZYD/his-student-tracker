@@ -23,12 +23,12 @@ export async function indexSkills(): Promise<Response> {
   }
 }
 
-export async function createSkill(payload: createSkillReq): Promise<Response> {
+export async function createSkill(data: createSkillReq): Promise<Response> {
   try {
     const existing = await prisma.skill.findFirst({
       where: {
         name: {
-          equals: payload.name,
+          equals: data.name,
           mode: 'insensitive'
         }
       }
@@ -43,7 +43,7 @@ export async function createSkill(payload: createSkillReq): Promise<Response> {
 
     const skill: Skill = await prisma.skill.create({
       data: {
-        ...payload
+        ...data
       }
     })
 

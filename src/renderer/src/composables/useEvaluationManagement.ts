@@ -69,22 +69,22 @@ export function useEvaluationManagement(code: string): {
         ([skillId, score]) => ({ skillId, score })
       )
 
-      const payload = {
+      const data = {
         code: code,
         comment: comment.value.trim() || null,
         skillEvaluations
       }
 
       const response = editingEvaluationId.value
-        ? await window.api.updateEvaluation({ evaluationId: editingEvaluationId.value, ...payload })
-        : await window.api.createEvaluation(payload)
+        ? await window.api.updateEvaluation({ evaluationId: editingEvaluationId.value, ...data })
+        : await window.api.createEvaluation(data)
 
       if (response.success) {
         cancelEdit()
         return response
       }
-
-      throw new Error(response.message)
+    } catch (err: any) {
+      throw new Error(err?.message || 'Unexpected Error')
     } finally {
       submitting.value = false
     }
@@ -108,9 +108,13 @@ export function useEvaluationManagement(code: string): {
   }
   async function deleteEvaluation(evaluationId: number): Promise<ResponseSchema | void> {
     if (!confirm('Delete this evaluation? This cannot be undone.')) return
+    try {
+      const response = await window.api.deleteEvaluation(evaluationId)
 
-    const response = await window.api.deleteEvaluation(evaluationId)
-    return response
+      return response
+    } catch (err: any) {
+      throw new Error(err.message || 'Failed')
+    }
   }
 
   return {

@@ -160,6 +160,7 @@ const onEvaluationUpdated = (
             <InfoTab
               v-if="activeTab === 'info'"
               :student="student"
+              :is-create-mode="false"
               :has-unsaved-changes="hasUnsavedChanges"
               @dirty="markDirty"
               @saved="resetDirty"

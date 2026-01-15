@@ -61,7 +61,7 @@ const submitStudentInfo = handleSubmit(async (values) => {
   submitting.value = true
   error.value = false
   try {
-    const payload = {
+    const data = {
       ...values,
       birth_date: new Date(values.birth_date).toISOString(),
       enrollment_year: new Date(values.enrollment_year).toISOString(),
@@ -69,17 +69,13 @@ const submitStudentInfo = handleSubmit(async (values) => {
       specialtyId: Number(values.specialtyId)
     }
     const res = props.isCreateMode
-      ? await window.api.createStudent(payload)
-      : await window.api.updateStudent(payload)
+      ? await window.api.createStudent(data)
+      : await window.api.updateStudent(data)
     if (res.success) {
       resetForm({ values: { ...values } })
       emit('saved')
       submitting.value = false
       toast.showToast('Operation successful.', 'success')
-    } else {
-      submitting.value = false
-      error.value = true
-      toast.showToast('An error occurred ', 'error')
     }
   } catch (err: any) {
     console.error(err)
