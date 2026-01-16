@@ -86,7 +86,7 @@ const handleSearchInput = (): void => {
 const fetchAllSkills = async (): Promise<void> => {
   loading.value = true
   try {
-    const response = await window.api.indexSkills()
+    const response = await window.api.skill.index()
     if (response.success) {
       allSkills.value = response.data.skills
       attachedSkillIds.value = new Set(
@@ -118,7 +118,7 @@ const detachSkill = (skillId: number, skillName: string): void => {
 const deleteSkill = async (skillId: number): Promise<void> => {
   if (!confirm('Are you sure you want to delete this skill?')) return
   try {
-    const res = await window.api.deleteSkill(skillId)
+    const res = await window.api.skill.delete(skillId)
     if (res.success) {
       allSkills.value = allSkills.value.filter((s) => s.id !== skillId)
       attachedSkillIds.value.delete(skillId)
@@ -135,7 +135,7 @@ const deleteSkill = async (skillId: number): Promise<void> => {
 const saveSkills = async (): Promise<void> => {
   submitting.value = true
   try {
-    const res = await window.api.updateStudentSkills({
+    const res = await window.api.student.updateSkills({
       code: props.student.code,
       skillIds: Array.from(attachedSkillIds.value)
     })
@@ -165,7 +165,7 @@ const createSkill = handleSubmit(async (values) => {
       description: values.description,
       type: values.type
     }
-    const res = await window.api.createSkill(data)
+    const res = await window.api.skill.create(data)
     if (res.success) {
       resetForm()
       allSkills.value.push(res.data.skill)

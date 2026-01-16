@@ -1,6 +1,6 @@
 // services/evaluation.service.ts
 import { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluation.schema'
-import { prisma } from '../config/prisma'
+import { prisma } from '../prisma/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
 
 export async function createEvaluation(data: CreateEvaluationReq): Promise<Response> {

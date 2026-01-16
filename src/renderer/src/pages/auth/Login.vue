@@ -29,7 +29,7 @@ const [password, passwordAttrs] = defineField('password')
 
 const onSubmit = handleSubmit(async (values) => {
   try {
-    const res: Response = await window.api.authenticate(values.username, values.password)
+    const res: Response = await window.api.auth.authenticate(values.username, values.password)
     if (!res.success) {
       setFieldError('username', 'Invalid username or password')
       return

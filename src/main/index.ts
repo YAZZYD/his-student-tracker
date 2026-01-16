@@ -1,9 +1,8 @@
 import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
-// import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { registerIpcHandler } from '../../config/ipc'
+import { registerIpcHandlers } from '../../ipc/register'
 
 // Disable hardware acceleration completely
 app.disableHardwareAcceleration()
@@ -55,7 +54,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
-  registerIpcHandler()
+  registerIpcHandlers()
   createWindow()
 
   app.on('activate', function () {

@@ -1,28 +1,31 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
-import StudentRow from './components/index/StudentRow.vue'
-import type { ResponseSchema as Response } from '@/schemas/response.schema'
-import type { StudentHeadInfo, StudentCode } from '@renderer/types/models'
-import { router } from '@renderer/router'
-import { UserPlus, Search, X } from 'lucide-vue-next'
-import { useToast } from '@renderer/composables/useToast'
+import ActivityRow from './components/ActivityRow.vue'
+import ActivityFormModal from './components/modals/ActivityFormModal.vue'
 import Loading from '@renderer/components/ui/loading/Loading.vue'
-import { Meta } from '@renderer/types/models'
+import type { ResponseSchema as Response } from '@/schemas/response.schema'
+import type { Activity, Meta } from '@renderer/types/models'
+import { Plus, Search, X } from 'lucide-vue-next'
+import { useToast } from '@renderer/composables/useToast'
 
 const toast = useToast()
-const students = ref<StudentHeadInfo[]>([])
+const activities = ref<Activity[]>([])
 const meta = ref<Meta | null>(null)
 const loading = ref(false)
 const page = ref(1)
 const searchQuery = ref('')
 
-const fetchStudents = async (page = 1, query = ''): Promise<void> => {
+const showModal = ref(false)
+const modalMode = ref<'create' | 'update'>('create')
+const selectedActivity = ref<Activity | null>(null)
+
+const fetchActivities = async (page = 1, query = ''): Promise<void> => {
   loading.value = true
   try {
-    const res: Response = await window.api.student.index(page, query)
+    const res: Response = await window.api.activity.index(page, query)
     if (res.success) {
-      students.value = res.data.students
+      activities.value = res.data.activities
       meta.value = res.data.meta
     }
   } catch (err) {
@@ -34,7 +37,7 @@ const fetchStudents = async (page = 1, query = ''): Promise<void> => {
 
 const debouncedSearch = useDebounceFn((query: string) => {
   page.value = 1
-  fetchStudents(1, query)
+  fetchActivities(1, query)
 }, 300)
 
 const handleSearch = (): void => {
@@ -44,64 +47,72 @@ const handleSearch = (): void => {
 const clearSearch = (): void => {
   searchQuery.value = ''
   page.value = 1
-  fetchStudents(1, '')
+  fetchActivities(1, '')
 }
 
-const showStudent = async (student: StudentCode): Promise<void> => {
-  router.replace({ name: 'student-show', params: { code: student.code } })
+const openCreateModal = (): void => {
+  modalMode.value = 'create'
+  selectedActivity.value = null
+  showModal.value = true
 }
 
-const editStudent = async (student: StudentCode): Promise<void> => {
-  router.replace({ name: 'student-edit', params: { code: student.code } })
+const editActivity = (activity: Activity): void => {
+  modalMode.value = 'update'
+  selectedActivity.value = activity
+  showModal.value = true
 }
 
-const deleteStudent = async (student: StudentCode): Promise<void> => {
+const deleteActivity = async (activity: Activity): Promise<void> => {
   try {
-    const res: Response = await window.api.student.delete(student.code)
+    const res: Response = await window.api.activity.delete(activity.id)
     if (res.success) {
       toast.showToast('Deleted successfully', 'success')
-      await fetchStudents()
+      fetchActivities(page.value, searchQuery.value)
     }
   } catch (err: any) {
     toast.showToast(err?.message || 'Error', 'error')
   }
 }
 
+const handleActivityCreated = (): void => {
+  toast.showToast('Created successfully', 'success')
+  fetchActivities(page.value, searchQuery.value)
+}
+
+const handleActivityUpdated = (): void => {
+  toast.showToast('Updated successfully', 'success')
+  fetchActivities(page.value, searchQuery.value)
+}
+
 const prevPage = (): void => {
   if (page.value > 1) {
     page.value--
-    fetchStudents(page.value, searchQuery.value)
+    fetchActivities(page.value, searchQuery.value)
   }
 }
 
 const nextPage = (): void => {
   if (meta.value && page.value < meta.value.lastPage) {
     page.value++
-    fetchStudents(page.value, searchQuery.value)
+    fetchActivities(page.value, searchQuery.value)
   }
 }
 
-const navigateToCreate = (): void => {
-  router.push({ name: 'student-create' })
-}
-
-onMounted(() => fetchStudents())
+onMounted(() => fetchActivities())
 </script>
 
 <template>
   <div class="p-6 w-full max-w-7xl mx-auto">
-    <!-- Header -->
     <div class="mb-6">
       <div class="flex items-center justify-between gap-4 mb-4">
         <div>
-          <h1 class="text-3xl font-bold text-white tracking-tight">Students</h1>
+          <h1 class="text-3xl font-bold text-white tracking-tight">Activities</h1>
           <p v-if="meta" class="text-sm text-slate-400 mt-1.5">
             <span class="font-medium text-slate-300">{{ meta.total }}</span>
-            {{ searchQuery ? 'matching' : 'total' }} students
+            {{ searchQuery ? 'matching' : 'total' }} activities
           </p>
         </div>
 
-        <!-- Search Bar -->
         <div class="relative flex-1 max-w-md">
           <Search
             :size="18"
@@ -110,7 +121,7 @@ onMounted(() => fetchStudents())
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search students..."
+            placeholder="Search activities..."
             class="w-full pl-10 pr-9 py-2 bg-slate-800/60 border border-slate-700/60 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-slate-600 transition-colors"
             @input="handleSearch"
           />
@@ -126,56 +137,49 @@ onMounted(() => fetchStudents())
 
         <button
           class="flex items-center gap-2 px-4 py-2 text-white text-sm font-medium rounded-lg border border-blue-500/50 hover:border-blue-600/50 shadow-lg shadow-blue-500/20 transition-all duration-200 hover:shadow-blue-600/40"
-          @click="navigateToCreate"
+          @click="openCreateModal"
         >
-          <UserPlus :size="18" :stroke-width="2" />
-          <span>Create Student</span>
+          <Plus :size="18" :stroke-width="2" />
+          <span>Create Activity</span>
         </button>
       </div>
     </div>
 
-    <!-- Table Container -->
     <div
-      class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden"
+      class="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden relative"
     >
       <Loading v-if="loading" />
 
-      <!-- Table Header (Fixed) -->
       <div class="bg-slate-900/80 border-b border-slate-700/50">
         <table class="w-full">
           <thead>
             <tr class="text-slate-300 text-sm font-semibold">
-              <th class="px-6 py-4 text-center w-32">Code</th>
-              <th class="px-6 py-4 text-center">Name</th>
-              <th class="px-6 py-4 text-center">Email</th>
-              <th class="px-6 py-4 text-center">Specialty</th>
-              <th class="px-6 py-4 text-center w-32">Grade</th>
+              <th class="px-6 py-4 text-left">Name</th>
+              <th class="px-6 py-4 text-left">Description</th>
+              <th class="px-6 py-4 text-center w-32">Type</th>
               <th class="px-6 py-4 text-right w-36"></th>
             </tr>
           </thead>
         </table>
       </div>
 
-      <!-- Scrollable Body -->
       <div
         class="max-h-[calc(100vh-380px)] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent"
       >
         <table class="w-full">
           <tbody>
-            <StudentRow
-              v-for="student in students"
-              :key="student.code"
-              :student="student"
-              @show="showStudent"
-              @edit="editStudent"
-              @delete="deleteStudent"
+            <ActivityRow
+              v-for="activity in activities"
+              :key="activity.id"
+              :activity="activity"
+              @edit="editActivity"
+              @delete="deleteActivity"
             />
-            <!-- Empty State -->
-            <tr v-if="!loading && students.length === 0">
-              <td colspan="7" class="px-6 py-16 text-center text-slate-400">
+            <tr v-if="!loading && activities.length === 0">
+              <td colspan="4" class="px-6 py-16 text-center text-slate-400">
                 <div class="flex flex-col items-center gap-2">
                   <span class="text-lg">
-                    {{ searchQuery ? 'No students match your search' : 'No students found' }}
+                    {{ searchQuery ? 'No activities match your search' : 'No activities found' }}
                   </span>
                   <button
                     v-if="searchQuery"
@@ -192,7 +196,6 @@ onMounted(() => fetchStudents())
       </div>
     </div>
 
-    <!-- Pagination -->
     <div class="mt-6 flex items-center justify-between">
       <button
         class="px-4 py-2 rounded-lg border border-slate-600 bg-slate-800/50 text-slate-200 font-medium hover:bg-slate-700 hover:border-slate-500 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-slate-800/50 transition-all"
@@ -216,5 +219,14 @@ onMounted(() => fetchStudents())
         Next
       </button>
     </div>
+
+    <ActivityFormModal
+      :show="showModal"
+      :mode="modalMode"
+      :activity="selectedActivity"
+      @close="showModal = false"
+      @created="handleActivityCreated"
+      @updated="handleActivityUpdated"
+    />
   </div>
 </template>

@@ -1,10 +1,12 @@
 import { createActivityReq, updateActivityReq } from '@/schemas/activity.schema'
-import { prisma } from '../config/prisma'
+import { prisma } from '../prisma/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
+import { Prisma } from '@/prisma/generated/client'
 
 const PAGE_SIZE = 10
-export async function indexActivities(
+export async function indexActivity(
   page: number = 1,
+  query: string = '',
   paginate: boolean = false
 ): Promise<Response> {
   try {
@@ -18,10 +20,17 @@ export async function indexActivities(
       }
     }
 
+    const whereClause: Prisma.ActivityWhereInput = query
+      ? {
+          name: { contains: query, mode: 'insensitive' }
+        }
+      : {}
     const [activities, total] = await prisma.$transaction([
       prisma.activity.findMany({
+        where: whereClause,
         skip: (page - 1) * PAGE_SIZE,
-        take: PAGE_SIZE
+        take: PAGE_SIZE,
+        orderBy: { createdAt: 'desc' }
       }),
       prisma.activity.count()
     ])
@@ -81,17 +90,13 @@ export async function updateActivity(data: updateActivityReq): Promise<Response>
 }
 export async function deleteActivity(activityId: number): Promise<Response> {
   try {
-    const activity = await prisma.activity.findUniqueOrThrow({
-      where: { id: activityId }
-    })
     await prisma.activity.delete({
       where: { id: activityId }
     })
     return {
       success: true,
       status: 200,
-      message: 'deleted',
-      data: { activity }
+      message: 'deleted'
     }
   } catch (err) {
     console.error(err)

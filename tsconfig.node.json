@@ -1,12 +1,11 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
-  "include": ["electron.vite.config.*", "src/main/**/*", "schemas/*","src/preload/**/*","config/*","services/*","prisma/generated/*"],
+  "include": ["electron.vite.config.*", "src/main/**/*", "schemas/*","src/preload/**/*","ipc/**/*","services/*","prisma/generated/*", "prisma/prisma.ts"],
   "compilerOptions": {
     "composite": true,
     "types": ["electron-vite/node"],
       "paths": {
       "@/*": ["./*"],
-      "@config/*": ["./config/*"],
       "@services/*": ["./services/*"],
       "@schemas/*": ["./schemas/*"]
     }

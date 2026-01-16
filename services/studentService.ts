@@ -4,7 +4,7 @@ import {
   updateStudentInfoReq,
   createStudentInfoReq
 } from '@/schemas/student.schema'
-import { prisma } from '../config/prisma'
+import { prisma } from '../prisma/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
 import { Prisma } from '@/prisma/generated/client'
 
@@ -234,6 +234,22 @@ export async function updateStudentSkills(data: updateStudentSkillReq): Promise<
       success: true,
       message: 'Student skills updated successfully',
       data: { evaluation: updatedEvaluation }
+    }
+  } catch (err) {
+    console.error(err)
+    throw err instanceof Error ? err : new Error('Unexpected error')
+  }
+}
+
+export async function deleteStudent(code: string): Promise<Response> {
+  try {
+    await prisma.student.delete({
+      where: { code: code }
+    })
+
+    return {
+      success: true,
+      message: 'deleted'
     }
   } catch (err) {
     console.error(err)

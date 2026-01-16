@@ -69,8 +69,8 @@ const submitStudentInfo = handleSubmit(async (values) => {
       specialtyId: Number(values.specialtyId)
     }
     const res = props.isCreateMode
-      ? await window.api.createStudent(data)
-      : await window.api.updateStudent(data)
+      ? await window.api.student.create(data)
+      : await window.api.student.update(data)
     if (res.success) {
       resetForm({ values: { ...values } })
       emit('saved')
@@ -104,7 +104,7 @@ onMounted(async () => {
 
     await nextTick()
 
-    const res = await window.api.indexAcademicCatalog()
+    const res = await window.api.academic.index()
     specialtiesWithGrades.value = res.data
     isInitialized.value = true
   } catch (err: any) {

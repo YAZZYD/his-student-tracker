@@ -76,8 +76,8 @@ export function useEvaluationManagement(code: string): {
       }
 
       const response = editingEvaluationId.value
-        ? await window.api.updateEvaluation({ evaluationId: editingEvaluationId.value, ...data })
-        : await window.api.createEvaluation(data)
+        ? await window.api.evaluation.update({ evaluationId: editingEvaluationId.value, ...data })
+        : await window.api.evaluation.create(data)
 
       if (response.success) {
         cancelEdit()
@@ -93,7 +93,7 @@ export function useEvaluationManagement(code: string): {
   async function fetchSkills(): Promise<void> {
     loading.value = true
     try {
-      const response = await window.api.indexSkills()
+      const response = await window.api.skill.index()
       if (response.success) {
         const skills: Skill[] = response.data.skills
         softSkills.value = skills.filter((s: Skill) => s.type === 'SOFT')
@@ -109,7 +109,7 @@ export function useEvaluationManagement(code: string): {
   async function deleteEvaluation(evaluationId: number): Promise<ResponseSchema | void> {
     if (!confirm('Delete this evaluation? This cannot be undone.')) return
     try {
-      const response = await window.api.deleteEvaluation(evaluationId)
+      const response = await window.api.evaluation.delete(evaluationId)
 
       return response
     } catch (err: any) {

@@ -124,7 +124,7 @@ export const useStudentData = (): {
   const fetchStudent = async (code: string): Promise<void> => {
     try {
       loading.value = true
-      const response = await window.api.showStudent(code)
+      const response = await window.api.student.show(code)
       if (response.success) student.value = response.data
     } catch (err: any) {
       error.value = 'Failed to load student data'

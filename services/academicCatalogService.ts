@@ -1,4 +1,4 @@
-import { prisma } from '../config/prisma'
+import { prisma } from '../prisma/prisma'
 import { ResponseSchema as Response } from '@schemas/response.schema'
 
 export async function indexSpecialtiesWithGrades(): Promise<Response> {

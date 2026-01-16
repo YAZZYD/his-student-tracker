@@ -9,29 +9,66 @@ import { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluation.s
 import { createSkillReq } from '@/schemas/skill.schema'
 import { createActivityReq, updateActivityReq } from '@/schemas/activity.schema'
 
-const api = {
+const auth = {
   authenticate: (username: string, password: string) =>
-    ipcRenderer.invoke('auth:login', username, password),
-  indexStudent: (page?: number, query?: string) => ipcRenderer.invoke('student:index', page, query),
-  showStudent: (code: string) => ipcRenderer.invoke('student:show', code),
-  indexAcademicCatalog: () => ipcRenderer.invoke('index-academic-catalog'),
-  updateStudent: (data: updateStudentInfoReq) => ipcRenderer.invoke('student:update', data),
-  createStudent: (data: createStudentInfoReq) => ipcRenderer.invoke('student:create', data),
-  updateStudentActivities: (data: attachActivitiesReq) =>
-    ipcRenderer.invoke('student:update-activities', data),
-  indexSkills: () => ipcRenderer.invoke('skill:index'),
-  updateStudentSkills: (data: updateStudentInfoReq) =>
-    ipcRenderer.invoke('student:update-skills', data),
-  createEvaluation: (data: CreateEvaluationReq) => ipcRenderer.invoke('evaluation:create', data),
-  updateEvaluation: (data: updateEvaluationReq) => ipcRenderer.invoke('evaluation:update', data),
-  deleteEvaluation: (evaluationId: number) => ipcRenderer.invoke('evaluation:delete', evaluationId),
-  createSkill: (data: createSkillReq) => ipcRenderer.invoke('skill:create', data),
-  deleteSkill: (skillId: number) => ipcRenderer.invoke('skill:delete', skillId),
-  indexActivities: (page?: number, paginate?: boolean) =>
-    ipcRenderer.invoke('activity:index', page, paginate),
-  createActivity: (data: createActivityReq) => ipcRenderer.invoke('activity:crate', data),
-  updateActivity: (data: updateActivityReq) => ipcRenderer.invoke('activity:crate', data),
-  deleteActivity: (activityId: number) => ipcRenderer.invoke('activity:crate', activityId)
+    ipcRenderer.invoke('auth:login', username, password)
+}
+
+const student = {
+  index: (page?: number, query?: string) => ipcRenderer.invoke('student:index', page, query),
+
+  show: (code: string) => ipcRenderer.invoke('student:show', code),
+
+  create: (data: createStudentInfoReq) => ipcRenderer.invoke('student:create', data),
+
+  update: (data: updateStudentInfoReq) => ipcRenderer.invoke('student:update', data),
+
+  delete: (code: string) => ipcRenderer.invoke('student:delete', code),
+
+  updateSkills: (data: updateStudentInfoReq) => ipcRenderer.invoke('student:update-skills', data),
+
+  updateActivities: (data: attachActivitiesReq) =>
+    ipcRenderer.invoke('student:update-activities', data)
+}
+
+const activity = {
+  index: (page?: number, query?: string, paginate = true) =>
+    ipcRenderer.invoke('activity:index', page, query, paginate),
+
+  create: (data: createActivityReq) => ipcRenderer.invoke('activity:create', data),
+
+  update: (data: updateActivityReq) => ipcRenderer.invoke('activity:update', data),
+
+  delete: (activityId: number) => ipcRenderer.invoke('activity:delete', activityId)
+}
+
+const skill = {
+  index: () => ipcRenderer.invoke('skill:index'),
+
+  create: (data: createSkillReq) => ipcRenderer.invoke('skill:create', data),
+
+  delete: (skillId: number) => ipcRenderer.invoke('skill:delete', skillId)
+}
+
+const evaluation = {
+  create: (data: CreateEvaluationReq) => ipcRenderer.invoke('evaluation:create', data),
+
+  update: (data: updateEvaluationReq) => ipcRenderer.invoke('evaluation:update', data),
+
+  delete: (evaluationId: number) => ipcRenderer.invoke('evaluation:delete', evaluationId)
+}
+
+const academic = {
+  index: () => ipcRenderer.invoke('academic:index-catalog')
+}
+
+export const api = {
+  auth,
+  student,
+  activity,
+  skill,
+  evaluation,
+  academic
 }
 
 if (process.contextIsolated) {

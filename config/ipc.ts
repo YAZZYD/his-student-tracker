@@ -20,7 +20,7 @@ import type { createActivityReq, updateActivityReq } from '../schemas/activity.s
 import {
   createActivity,
   deleteActivity,
-  indexActivities,
+  IndexActivity,
   updateActivity
 } from '../services/activityService'
 import { createSkill, deleteSkill, indexSkills } from '../services/skillService'
@@ -66,7 +66,7 @@ export function registerIpcHandler(): void {
   ipcMain.handle(
     'activity:index',
     async (_event, page?: number, paginate?: boolean): Promise<Response> =>
-      await indexActivities(page, paginate)
+      await IndexActivity(page, paginate)
   )
   ipcMain.handle(
     'student:update-activities',

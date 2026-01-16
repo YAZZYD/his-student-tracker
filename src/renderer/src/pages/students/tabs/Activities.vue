@@ -32,7 +32,7 @@ const submitting = ref(false)
 const fetchActivities = async (): Promise<void> => {
   loading.value = true
   try {
-    const response = await window.api.indexActivities()
+    const response = await window.api.activity.index()
     if (response.success) {
       allActivities.value = response.data.activities
       updateAvailableActivities()
@@ -78,7 +78,7 @@ const saveActivities = async (): Promise<void> => {
   try {
     const activityIds = attachedActivities.value.map((a) => a.id)
 
-    const response = await window.api.updateStudentActivities({
+    const response = await window.api.student.updateActivities({
       code: props.studentCode,
       activityIds
     })

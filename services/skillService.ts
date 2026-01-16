@@ -1,5 +1,5 @@
 import { createSkillReq } from '@/schemas/skill.schema'
-import { prisma } from '../config/prisma'
+import { prisma } from '../prisma/prisma'
 
 import { ResponseSchema as Response } from '@schemas/response.schema'
 import { Skill } from '@/prisma/generated/client'

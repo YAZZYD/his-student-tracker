@@ -1,4 +1,4 @@
-import { prisma } from '../config/prisma'
+import { prisma } from '../prisma/prisma'
 import bcrypt from 'bcryptjs'
 import { ResponseSchema as Response } from '@schemas/response.schema'
 

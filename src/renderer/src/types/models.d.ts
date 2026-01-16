@@ -13,6 +13,13 @@ export interface StudentHeadInfo extends Pick<Student, 'code' | 'name' | 'email'
   specialty: { name: string }
 }
 
+export interface Meta {
+  currentPage: number
+  perPage: number
+  total: number
+  lastPage: number
+}
+
 export type StudentCode = Pick<Student, 'code'>
 
 export type { Skill_Type, Activity_Type }
