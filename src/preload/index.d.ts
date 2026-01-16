@@ -4,10 +4,11 @@ import type { ResponseSchema as Response } from '@/schemas/response.schema'
 import type { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluationtion.schema'
 
 import type {
-  updateStudentInfoReq,
-  attachActivitiesReq,
+  UpdateStudentInfoReq,
+  AttachActivitiesReq,
   updateStudentSkillReq,
-  createStudentInfoReq
+  CreateStudentInfoReq,
+  ImportBulkParams
 } from '@/schemas/student.schema'
 
 import type { createSkillReq } from '@/schemas/skill.schema'
@@ -24,11 +25,13 @@ declare global {
       student: {
         index(page?: number, query?: string): Promise<Response>
         show(code: string): Promise<Response>
-        create(data: createStudentInfoReq): Promise<Response>
-        update(data: updateStudentInfoReq): Promise<Response>
+        create(data: CreateStudentInfoReq): Promise<Response>
+        update(data: UpdateStudentInfoReq): Promise<Response>
         delete(code: string): Promise<Response>
         updateSkills(data: updateStudentSkillReq): Promise<Response>
-        updateActivities(data: attachActivitiesReq): Promise<Response>
+        updateActivities(data: AttachActivitiesReq): Promise<Response>
+        importBulk(params: ImportBulkParams): Promise<Response>
+        downloadTemplate(): Promise<Response>
       }
 
       activity: {

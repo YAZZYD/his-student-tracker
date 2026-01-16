@@ -16,15 +16,15 @@ export const studentInfoSchema = z.object({
   specialtyId: z.number().min(1, 'Specialty is required')
 })
 
-export type updateStudentInfoReq = z.infer<typeof studentInfoSchema>
-export type createStudentInfoReq = z.infer<typeof studentInfoSchema>
-
+export type UpdateStudentInfoReq = z.infer<typeof studentInfoSchema>
+export type CreateStudentInfoReq = z.infer<typeof studentInfoSchema>
+export type ImportStudentRow = z.infer<typeof studentInfoSchema>
 export const attachActivitiesSchema = z.object({
   code: z.string().min(1, 'Code is required'),
   activityIds: z.array(z.number().int().positive()).default([])
 })
 
-export type attachActivitiesReq = z.infer<typeof attachActivitiesSchema>
+export type AttachActivitiesReq = z.infer<typeof attachActivitiesSchema>
 
 export const updateStudentSkillSchema = z.object({
   code: z.string().min(1, 'Code is required'),
@@ -32,3 +32,9 @@ export const updateStudentSkillSchema = z.object({
 })
 
 export type updateStudentSkillReq = z.infer<typeof updateStudentSkillSchema>
+
+export interface ImportBulkParams {
+  fileName: string
+  fileData: number[] // Buffer as array
+  fileType: string
+}

@@ -2,10 +2,10 @@
 import { ipcMain } from 'electron'
 import type { ResponseSchema as Response } from '../../schemas/response.schema'
 import type {
-  updateStudentInfoReq,
-  attachActivitiesReq,
+  UpdateStudentInfoReq,
+  AttachActivitiesReq,
   updateStudentSkillReq,
-  createStudentInfoReq
+  CreateStudentInfoReq
 } from '../../schemas/student.schema'
 
 import {
@@ -15,8 +15,10 @@ import {
   updateAttachedActivities,
   updateStudent,
   updateStudentSkills,
-  deleteStudent
-} from '../../services/studentService'
+  deleteStudent,
+  importBulk,
+  downloadTemplate
+} from '../../services/student.service'
 
 export const registerStudentHandlers = (): void => {
   ipcMain.handle(
@@ -28,12 +30,12 @@ export const registerStudentHandlers = (): void => {
 
   ipcMain.handle(
     'student:create',
-    async (_e, data: createStudentInfoReq): Promise<Response> => createStudent(data)
+    async (_e, data: CreateStudentInfoReq): Promise<Response> => createStudent(data)
   )
 
   ipcMain.handle(
     'student:update',
-    async (_e, data: updateStudentInfoReq): Promise<Response> => updateStudent(data)
+    async (_e, data: UpdateStudentInfoReq): Promise<Response> => updateStudent(data)
   )
 
   ipcMain.handle(
@@ -48,6 +50,11 @@ export const registerStudentHandlers = (): void => {
 
   ipcMain.handle(
     'student:update-activities',
-    async (_e, data: attachActivitiesReq): Promise<Response> => updateAttachedActivities(data)
+    async (_e, data: AttachActivitiesReq): Promise<Response> => updateAttachedActivities(data)
   )
+  ipcMain.handle(
+    'student:import',
+    async (_e, filePath: string): Promise<Response> => importBulk(filePath)
+  )
+  ipcMain.handle('student:template', async (): Promise<Response> => downloadTemplate())
 }

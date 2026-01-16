@@ -1,9 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import {
-  updateStudentInfoReq,
-  attachActivitiesReq,
-  createStudentInfoReq
+  UpdateStudentInfoReq,
+  AttachActivitiesReq,
+  CreateStudentInfoReq,
+  ImportBulkParams
 } from '@/schemas/student.schema'
 import { CreateEvaluationReq, updateEvaluationReq } from '@/schemas/evaluation.schema'
 import { createSkillReq } from '@/schemas/skill.schema'
@@ -19,16 +20,18 @@ const student = {
 
   show: (code: string) => ipcRenderer.invoke('student:show', code),
 
-  create: (data: createStudentInfoReq) => ipcRenderer.invoke('student:create', data),
+  create: (data: CreateStudentInfoReq) => ipcRenderer.invoke('student:create', data),
 
-  update: (data: updateStudentInfoReq) => ipcRenderer.invoke('student:update', data),
+  update: (data: UpdateStudentInfoReq) => ipcRenderer.invoke('student:update', data),
 
   delete: (code: string) => ipcRenderer.invoke('student:delete', code),
 
-  updateSkills: (data: updateStudentInfoReq) => ipcRenderer.invoke('student:update-skills', data),
+  updateSkills: (data: UpdateStudentInfoReq) => ipcRenderer.invoke('student:update-skills', data),
 
-  updateActivities: (data: attachActivitiesReq) =>
-    ipcRenderer.invoke('student:update-activities', data)
+  updateActivities: (data: AttachActivitiesReq) =>
+    ipcRenderer.invoke('student:update-activities', data),
+  importBulk: (params: ImportBulkParams) => ipcRenderer.invoke('student:import', params),
+  downloadTemplate: () => ipcRenderer.invoke('student:template')
 }
 
 const activity = {

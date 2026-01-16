@@ -8,7 +8,7 @@ import {
   deleteActivity,
   indexActivity,
   updateActivity
-} from '../../services/activityService'
+} from '../../services/activity.service'
 
 export const registerActivityHandlers = (): void => {
   ipcMain.handle(

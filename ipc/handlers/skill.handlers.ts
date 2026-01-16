@@ -2,7 +2,7 @@
 import { ipcMain } from 'electron'
 import type { ResponseSchema as Response } from '../../schemas/response.schema'
 import type { createSkillReq } from '../../schemas/skill.schema'
-import { createSkill, deleteSkill, indexSkills } from '../../services/skillService'
+import { createSkill, deleteSkill, indexSkills } from '../../services/skill.service'
 
 export const registerSkillHandlers = (): void => {
   ipcMain.handle('skill:index', async (): Promise<Response> => indexSkills())

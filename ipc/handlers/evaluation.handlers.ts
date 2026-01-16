@@ -1,12 +1,12 @@
 // ipc/evaluation.handlers.ts
 import { ipcMain } from 'electron'
 import type { ResponseSchema as Response } from '../../schemas/response.schema'
-import type { CreateEvaluationReq, updateEvaluationReq } from '../../schemas/evaluationtion.schema'
+import type { CreateEvaluationReq, updateEvaluationReq } from '../../schemas/evaluation.schema'
 import {
   createEvaluation,
   deleteEvaluation,
   updateEvaluation
-} from '../../services/evaluationService'
+} from '../../services/evaluation.service'
 
 export const registerEvaluationHandlers = (): void => {
   ipcMain.handle(
