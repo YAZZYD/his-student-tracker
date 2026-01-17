@@ -46,12 +46,10 @@ const infoSections = [
 <template>
   <div class="bg-slate-800/30 border border-slate-700/50 rounded-lg overflow-hidden">
     <!-- Header with Avatar -->
-    <div
-      class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 p-6 border-b border-slate-700/50"
-    >
+    <div class="bg-linear-to-br from-blue-600/20 to-slate-700/20 p-6 border-b border-slate-700/50">
       <div class="flex items-center gap-4">
         <div
-          class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white flex-shrink-0 ring-4 ring-slate-800/50"
+          class="w-24 h-24 rounded-full bg-linear-to-br from-blue-700/40 to-blue-600/50 flex items-center justify-center text-3xl font-bold text-white shrink-0 ring-2 ring-white/50"
         >
           {{ student.name.charAt(0) }}
         </div>
@@ -77,7 +75,7 @@ const infoSections = [
           </div>
           <div class="min-w-0 flex-1">
             <p class="text-xs text-slate-500 mb-1">{{ item.label }}</p>
-            <p class="text-sm text-slate-200 break-words">{{ item.value }}</p>
+            <p class="text-sm text-slate-200 wrap-break-words">{{ item.value }}</p>
           </div>
         </div>
       </div>

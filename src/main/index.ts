@@ -18,7 +18,7 @@ function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    // useContentSize: true,
+    useContentSize: true,
     title: 'Student Tracker',
     show: false,
     autoHideMenuBar: true,
