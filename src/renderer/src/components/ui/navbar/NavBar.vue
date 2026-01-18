@@ -26,11 +26,7 @@ const navigateTo = (routeName: string): void => {
     <div class="h-full w-full px-6 flex items-center justify-between">
       <!-- Brand -->
       <div class="flex items-center gap-3">
-        <img
-          src="@renderer/assets/his-logo.png"
-          alt="HIS Logo"
-          class="w-7 h-7 rounded object-cover"
-        />
+        <img src="@renderer/assets/his.png" alt="HIS Logo" class="w-7 h-7 rounded object-cover" />
         <div class="flex flex-col">
           <span class="text-slate-100 font-semibold text-sm leading-tight"> Student Portal </span>
           <span class="text-slate-500 text-xs leading-tight"> Tracking System </span>

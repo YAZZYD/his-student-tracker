@@ -8,6 +8,6 @@ export default defineConfig({
     seed: 'tsx prisma/migrations/seed.ts'
   },
   datasource: {
-    url: env('DATABASE_URL')
+    url: env('EVALUATOR_DB')
   }
 })

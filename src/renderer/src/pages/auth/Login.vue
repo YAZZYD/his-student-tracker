@@ -47,7 +47,7 @@ const onSubmit = handleSubmit(async (values) => {
     <!-- Logo/Brand -->
     <div class="flex flex-col items-center">
       <img
-        src="@renderer/assets/his-logo.png"
+        src="@renderer/assets/his.png"
         alt="HIS Logo"
         class="w-32 h-32 rounded-lg object-cover"
       />
