@@ -19,7 +19,7 @@ const auth = useAuth()
       <footer
         class="bg-slate-800/40 backdrop-blur-sm border-t border-slate-700/50 text-slate-400 text-sm p-4 text-center"
       >
-        &copy; {{ new Date().getFullYear() }} IYB
+        IYB &copy; {{ new Date().getFullYear() }}
       </footer>
     </div>
   </div>

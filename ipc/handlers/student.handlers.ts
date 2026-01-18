@@ -5,7 +5,8 @@ import type {
   UpdateStudentInfoReq,
   AttachActivitiesReq,
   updateStudentSkillReq,
-  CreateStudentInfoReq
+  CreateStudentInfoReq,
+  ImportBulkParams
 } from '../../schemas/student.schema'
 
 import {
@@ -54,7 +55,7 @@ export const registerStudentHandlers = (): void => {
   )
   ipcMain.handle(
     'student:import',
-    async (_e, filePath: string): Promise<Response> => importBulk(filePath)
+    async (_e, params: ImportBulkParams): Promise<Response> => importBulk(params)
   )
   ipcMain.handle('student:template', async (): Promise<Response> => downloadTemplate())
 }

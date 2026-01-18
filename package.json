@@ -1,5 +1,5 @@
 {
-  "name": "Student Tracker Portal",
+  "name": "student-evaluation",
   "version": "1.0.0",
   "description": "HIS Student Tracker portal",
   "main": "./out/main/index.js",

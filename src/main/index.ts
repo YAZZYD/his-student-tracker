@@ -19,7 +19,7 @@ function createWindow(): void {
     width: 1200,
     height: 800,
     useContentSize: true,
-    title: 'Student Tracker',
+    title: 'Evaluator',
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -33,10 +33,6 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-  })
-
-  mainWindow.on('close', () => {
-    app.quit()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

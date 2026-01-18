@@ -35,5 +35,5 @@ export const router = createRouter({
 })
 
 router.afterEach(() => {
-  document.title = 'HIS | Student tracker'
+  document.title = 'HIS Evaluator'
 })
