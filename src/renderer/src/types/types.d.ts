@@ -1,1 +1,1 @@
-/home/ya22y/student-tracker/src/preload/index.d.ts
+/home/ya22y/workspace/HIS-EVALUATOR/src/preload/index.d.ts

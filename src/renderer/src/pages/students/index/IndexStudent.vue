@@ -110,7 +110,7 @@ onMounted(() => fetchStudents())
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search students..."
+            placeholder="Search students by name,code,email,activity name..."
             class="w-full pl-10 pr-9 py-2 bg-slate-800/60 border border-slate-700/60 rounded-lg text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-slate-600 transition-colors"
             @input="handleSearch"
           />

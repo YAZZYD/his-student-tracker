@@ -22,7 +22,14 @@ export async function indexStudents(page: number = 1, query: string = ''): Promi
           OR: [
             { code: { contains: query, mode: 'insensitive' } },
             { name: { contains: query, mode: 'insensitive' } },
-            { email: { contains: query, mode: 'insensitive' } }
+            { email: { contains: query, mode: 'insensitive' } },
+            {
+              activities: {
+                some: {
+                  name: { contains: query, mode: 'insensitive' }
+                }
+              }
+            }
           ]
         }
       : {}
@@ -66,6 +73,7 @@ export async function indexStudents(page: number = 1, query: string = ''): Promi
     return { success: false, message: 'Error fetching students' }
   }
 }
+
 export async function showStudent(code: string): Promise<Response> {
   try {
     const student = await prisma.student.findFirstOrThrow({
