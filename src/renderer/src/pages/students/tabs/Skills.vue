@@ -33,6 +33,7 @@ const searchQuery = ref('')
 const isSearching = ref(false)
 const loading = ref(false)
 const submitting = ref(false)
+const searchInputRef = ref<HTMLInputElement | null>(null)
 
 const showAttachModal = ref(false)
 const showCreateSkillModal = ref(false)
@@ -110,7 +111,7 @@ const attachSkill = (skillId: number): void => {
 }
 
 const detachSkill = (skillId: number, skillName: string): void => {
-  if (!confirm(`Detach "${skillName}"?`)) return
+  if (!confirm(`Remove "${skillName}" from this student?`)) return
   attachedSkillIds.value.delete(skillId)
   emit('dirty')
 }
@@ -255,6 +256,7 @@ onMounted(fetchAllSkills)
                 class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"
               />
               <input
+                ref="searchInputRef"
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search skills by name or description..."

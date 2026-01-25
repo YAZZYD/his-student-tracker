@@ -1,20 +1,19 @@
 import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
-import { is } from '@electron-toolkit/utils'
+import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { registerIpcHandlers } from '../../ipc/register'
 
-// Disable hardware acceleration completely
 app.disableHardwareAcceleration()
-
-//tell Chromium to ignore VA-API
 app.commandLine.appendSwitch('disable-gpu')
 app.commandLine.appendSwitch('disable-software-rasterizer')
 app.commandLine.appendSwitch('disable-accelerated-video-decode')
 app.commandLine.appendSwitch('disable-accelerated-video-encode')
 
 function createWindow(): void {
-  // Create the browser window.
+  const preloadPath = app.isPackaged
+    ? join(__dirname, '../preload/index.js') // build output
+    : join(__dirname, '../preload/index.mjs') // dev source
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -24,7 +23,7 @@ function createWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../../out/preload/index.mjs'),
+      preload: preloadPath,
       sandbox: false,
       contextIsolation: true,
       nodeIntegration: false
@@ -40,8 +39,6 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -50,6 +47,14 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  electronApp.setAppUserModelId('com.electron.app')
+
+  // Default open or close DevTools by F12 in development
+  // and ignore CommandOrControl + R in production.
+  app.on('browser-window-created', (_, window) => {
+    optimizer.watchWindowShortcuts(window)
+  })
+
   registerIpcHandlers()
   createWindow()
 
