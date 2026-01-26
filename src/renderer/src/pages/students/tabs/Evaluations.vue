@@ -380,7 +380,8 @@ onMounted(async () => {
           <div class="flex items-start justify-between mb-3">
             <div>
               <p class="text-xs text-slate-400 mb-1">
-                {{ formatDate(evaluation.createdAt.toString()) }}
+                Created: {{ formatDate(evaluation.createdAt.toString()) }} | Updated:
+                {{ formatDate(evaluation.updatedAt.toString()) }}
               </p>
               <div class="flex items-center gap-2">
                 <span

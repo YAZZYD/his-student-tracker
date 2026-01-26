@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import { X, Plus, Search } from 'lucide-vue-next'
@@ -71,6 +71,13 @@ const filteredUnattachedSkills = computed(() => {
     (skill) =>
       skill.name.toLowerCase().includes(query) || skill.description.toLowerCase().includes(query)
   )
+})
+
+watch(showAttachModal, async (open) => {
+  if (open) {
+    await nextTick()
+    searchInputRef.value?.focus()
+  }
 })
 
 // Search debounce
